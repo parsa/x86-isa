@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>LODS/LODSB/LODSW/LODSD: Load String (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>LODS/LODSB/LODSW/LODSD - Load String</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>AC</code></td>
+<td><code>LODS m8</code></td>
+<td>Load byte at address DS:(E)SI into AL.</td>
+</tr>
+<tr>
+<td><code>AD</code></td>
+<td><code>LODS m16</code></td>
+<td>Load word at address DS:(E)SI into AX.</td>
+</tr>
+<tr>
+<td><code>AD</code></td>
+<td><code>LODS m32</code></td>
+<td>Load doubleword at address DS:(E)SI into EAX.</td>
+</tr>
+<tr>
+<td><code>AC</code></td>
+<td><code>LODSB</code></td>
+<td>Load byte at address DS:(E)SI into AL.</td>
+</tr>
+<tr>
+<td><code>AD</code></td>
+<td><code>LODSW</code></td>
+<td>Load word at address DS:(E)SI into AX.</td>
+</tr>
+<tr>
+<td><code>AD</code></td>
+<td><code>LODSD</code></td>
+<td>Load doubleword at address DS:(E)SI into EAX.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Loads a byte, word, or doubleword from the source operand into the AL, AX, or EAX register, respectively. The source operand is a memory location, the address of which is read from the DS:EDI or the DS:SI registers (depending on the address-size attribute of the instruction, 32 or 16, respectively). The DS segment may be overridden with a segment override prefix.</p>
+<p>At the assembly-code level, two forms of this instruction are allowed: the &quot;explicit-operands&quot; form and the &quot;no-operands&quot; form. The explicit-operands form (specified with the LODS mnemonic) allows the source operand to be specified explicitly. Here, the source operand should be a symbol that indicates the size and location of the source value. The destination operand is then automatically selected to match the size of the source operand (the AL register for byte operands, AX for word operands, and EAX for doubleword operands). This explicit-operands form is provided to allow documentation; however, note that the documentation provided by this form can be misleading. That is, the source operand symbol must specify the correct type (size) of the operand (byte, word, or doubleword), but it does not have to specify the correct location.</p>
+<p>The location is always specified by the DS:(E)SI registers, which must be loaded correctly before the load string instruction is executed.</p>
+<p>The no-operands form provides &quot;short forms&quot; of the byte, word, and doubleword versions of the LODS instructions. Here also DS:(E)SI is assumed to be the source operand and the AL, AX, or EAX register is assumed to be the destination operand. The size of the source and destination operands is selected with the mnemonic: LODSB (byte loaded into register AL), LODSW (word loaded into AX), or LODSD (doubleword loaded into EAX).</p>
+<p>After the byte, word, or doubleword is transferred from the memory location into the AL, AX, or EAX register, the (E)SI register is incremented or decremented automatically according to the setting of the DF flag in the EFLAGS register. (If the DF flag is 0, the (E)SI register is incremented; if the DF flag is 1, the ESI register is decremented.) The (E)SI register is incremented or decremented by 1 for byte operations, by 2 for word operations, or by 4 for doubleword operations.</p>
+<p>The LODS, LODSB, LODSW, and LODSD instructions can be preceded by the REP prefix for block loads of ECX bytes, words, or doublewords. More often, however, these instructions are used within a LOOP construct because further processing of the data moved into the register is usually necessary before the next transfer can be made. See &quot;REP/REPE/REPZ/REPNE /REPNZ-Repeat String Operation Prefix&quot; in Chapter 4 for a description of the REP prefix.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(IsByteOperation()) {
+	AL = Source;
+	if(DF == 0) (E)SI = (E)SI + 1;
+	else (E)SI = (E)SI - 1;
+}
+else if(IsWordOperation()) {
+	AX = Source;
+	if(DF == 0) (E)SI = (E)SI + 2;
+	else (E)SI = (E)SI - 2;
+}
+else { //doubleword transfer
+	EAX = Source;
+	if(DF == 0) (E)SI = (E)SI + 4;
+	else (E)SI = (E)SI - 4;
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. If the DS, ES, FS, or GS register contains a null segment selector.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. If the DS, ES, FS, or GS register contains a null segment selector.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#GP</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+</div>
+</body>
+</html>

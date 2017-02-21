@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>LDS/LES/LFS/LGS/LSS: Load Far Pointer (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>LDS/LES/LFS/LGS/LSS - Load Far Pointer</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>C5 /r</code></td>
+<td><code>LDS r16,m16:16</code></td>
+<td>Load DS:r16 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>C5 /r</code></td>
+<td><code>LDS r32,m16:32</code></td>
+<td>Load DS:r32 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>0F B2 /r</code></td>
+<td><code>LSS r16,m16:16</code></td>
+<td>Load SS:r16 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>0F B2 /r</code></td>
+<td><code>LSS r32,m16:32</code></td>
+<td>Load SS:r32 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>C4 /r</code></td>
+<td><code>LES r16,m16:16</code></td>
+<td>Load ES:r16 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>C4 /r</code></td>
+<td><code>LES r32,m16:32</code></td>
+<td>Load ES:r32 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>0F B4 /r</code></td>
+<td><code>LFS r16,m16:16</code></td>
+<td>Load FS:r16 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>0F B4 /r</code></td>
+<td><code>LFS r32,m16:32</code></td>
+<td>Load FS:r32 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>0F B5 /r</code></td>
+<td><code>LGS r16,m16:16</code></td>
+<td>Load GS:r16 with far pointer from memory.</td>
+</tr>
+<tr>
+<td><code>0F B5 /r</code></td>
+<td><code>LGS r32,m16:32</code></td>
+<td>Load GS:r32 with far pointer from memory.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Loads a far pointer (segment selector and offset) from the second operand (source operand) into a segment register and the first operand (destination operand). The source operand specifies a 48-bit or a 32-bit pointer in memory depending on the current setting of the operand-size attribute (32 bits or 16 bits, respectively). The instruction opcode and the destination operand specify a segment register/general-purpose register pair. The 16-bit segment selector from the source operand is loaded into the segment register specified with the opcode (DS, SS, ES, FS, or GS). The 32-bit or 16-bit offset is loaded into the register specified with the destination operand.</p>
+<p>If one of these instructions is executed in protected mode, additional information from the segment descriptor pointed to by the segment selector in the source operand is loaded in the hidden part of the selected segment register.</p>
+<p>Also in protected mode, a null selector (values 0000 through 0003) can be loaded into DS, ES, FS, or GS registers without causing a protection exception. (Any subsequent reference to a segment whose corresponding segment register is loaded with a null selector, causes a generalprotection exception (#GP) and no memory reference to the segment occurs.)</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(IsProtectedMode()) {
+	if(IsLoaded(SS)) {
+		if(SegmentSelector == 0) Exception(GP(0));
+		if(!IsWithinDescriptorTableLimits(SegmentSelector.Index) || SegmentSelector.RPL != CPL || !IndicatesWritableDataSegment(SegmentSelector) || DPL != CPL) Exception(GP(Selector));
+		if(!IsPresent(Segment)) Exception(SS(Selector));
+		SS = SegmentSelector.Source;
+		SS = SegmentDescriptor.Source; //Source: segment relative offset
+	}
+	else if((IsLoaded(DS) || IsLoaded(ES) || IsLoaded(FS) || IsLoaded(GS)) &amp;&amp; SegmentSelector != 0) { //DS, ES, FS, or GS is loaded with non-null segment selector
+		if(!IsWithinDescriptorTableLimits(SegmentSelector.Index) || IsData(SegmentSelector) || IsReadableCodeSegment(SegmentSelector) || (IsData(Segment) || !IsConformingCodeSegment(Segment) &amp;&amp; RPL &gt; DPL &amp;&amp; CPL &gt; DPL)) Exception(GP(Selector));
+		if(!IsPresent(Segment)) Exception(GP(Selector));
+		SegmentRegister = SegmentSelector.Source &amp; RPL;
+		SegmentRegister = SegmenDescriptor.Source; //Source: segment relative offset
+	}
+	else if((IsLoaded(DS) || IsLoaded(ES) || IsLoaded(FS) || IsLoaded(GS)) &amp;&amp; SegmentSelector == 0) { //DS, ES, FS, or GS is loaded with a null selector
+		SegmentRegister = NullSelector;
+		SegmentRegister.DescriptorValidBit = 0; //hidden flag, not accessible by software
+	}
+}
+if(IsRealAddressMode() || IsVirtual8086Mode()) SegmentRegister = SegmentSelector.Source;
+Destination = Offset(Source);
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#UD</code></td><td>If source operand is not a memory location.</td></tr>
+<tr><td><code>#UD</code></td><td>If source operand is not a memory location.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a null selector is loaded into the SS register. If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. If the DS, ES, FS, or GS register is used to access memory and it contains a null segment selector.</td></tr>
+<tr><td><code>#GP(selector)</code></td><td>If the SS register is being loaded and any of the following is true: the segment selector index is not within the descriptor table limits, the segment selector RPL is not equal to CPL, the segment is a non-writable data segment, or DPL is not equal to CPL. If the DS, ES, FS, or GS register is being loaded with a non-null segment selector and any of the following is true: the segment selector index is not within descriptor table limits, the segment is neither a data nor a readable code segment, or the segment is a data or nonconforming-code segment and both RPL and CPL are greater than DPL.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#SS(selector)</code></td><td>If the SS register is being loaded and the segment is marked not present.</td></tr>
+<tr><td><code>#NP(selector)</code></td><td>If DS, ES, FS, or GS register is being loaded with a non-null segment selector and the segment is marked not present.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#GP</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#SS</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#UD</code></td><td>If source operand is not a memory location.</td></tr>
+<tr><td><code>#UD</code></td><td>If source operand is not a memory location.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+</div>
+</body>
+</html>

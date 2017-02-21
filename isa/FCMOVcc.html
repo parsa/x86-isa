@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>FCMOVcc: Floating-Point Conditional Move (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>FCMOVcc - Floating-Point Conditional Move</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>DA C0+i</code></td>
+<td><code>FCMOVB ST(0), ST(i)</code></td>
+<td>Move if below (CF=1).</td>
+</tr>
+<tr>
+<td><code>DA C8+i</code></td>
+<td><code>FCMOVE ST(0), ST(i)</code></td>
+<td>Move if equal (ZF=1).</td>
+</tr>
+<tr>
+<td><code>DA D0+i</code></td>
+<td><code>FCMOVBE ST(0), ST(i)</code></td>
+<td>Move if below or equal (CF=1 or ZF=1).</td>
+</tr>
+<tr>
+<td><code>DA D8+i</code></td>
+<td><code>FCMOVU ST(0), ST(i)</code></td>
+<td>Move if unordered (PF=1).</td>
+</tr>
+<tr>
+<td><code>DB C0+i</code></td>
+<td><code>FCMOVNB ST(0), ST(i)</code></td>
+<td>Move if not below (CF=0).</td>
+</tr>
+<tr>
+<td><code>DB C8+i</code></td>
+<td><code>FCMOVNE ST(0), ST(i)</code></td>
+<td>Move if not equal (ZF=0).</td>
+</tr>
+<tr>
+<td><code>DB D0+i</code></td>
+<td><code>FCMOVNBE ST(0), ST(i)</code></td>
+<td>Move if not below or equal (CF=0 and ZF=0).</td>
+</tr>
+<tr>
+<td><code>DB D8+i</code></td>
+<td><code>FCMOVNU ST(0), ST(i)</code></td>
+<td>Move if not unordered (PF=0).</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Tests the status flags in the EFLAGS register and moves the source operand (second operand) to the destination operand (first operand) if the given test condition is true. The condition for each mnemonic is given in the Descriptions column above and in Table 7-4 in the IA-32 Intel Architecture Software Developer's Manual, Volume 1. The source operand is always in the ST(i) register and the destination operand is always ST(0).</p>
+<p>The FCMOVcc instructions are useful for optimizing small IF constructions. They also help eliminate branching overhead for IF operations and the possibility of branch mispredictions by the processor.</p>
+<p>A processor may not support the FCMOVcc instructions. Software can check if the FCMOVcc instructions are supported by checking the processor's feature information with the CPUID instruction (see &quot;COMISS-Compare Scalar Ordered Single-Precision Floating-Point Values and Set EFLAGS&quot; in this chapter). If both the CMOV and FPU feature bits are set, the FCMOVcc instructions are supported.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(Condition == true) ST(0) = ST(i);
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>FPU flags affected</th>
+</tr>
+<tr>
+<td>
+<p>C1 Set to 0 if stack underflow occurred.
+C0, C2, C3 Undefined.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>IA-32 Architecture Compatibility</th>
+</tr>
+<tr>
+<td>
+<p>The FCMOVcc instructions were introduced to the IA-32 Architecture in the P6 family processors and are not available in earlier IA-32 processors.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Floating-Point Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#IS</code></td><td>Stack underflow occurred. Integer {flags} None.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#NM</code></td><td>EM or TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#NM</code></td><td>EM or TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#NM</code></td><td>EM or TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+</div>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>VERR/VERW: Verify a Segment for Reading or Writing (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>VERR/VERW - Verify a Segment for Reading or Writing</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F 00 /4 VERR r/m16</code></td>
+<td><code>Set ZF=1 if segment specified with r/m16 can be read.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>0F 00 /5 VERW r/m16</code></td>
+<td><code>Set ZF=1 if segment specified with r/m16 can be written.</code></td>
+<td></td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Verifies whether the code or data segment specified with the source operand is readable (VERR) or writable (VERW) from the current privilege level (CPL). The source operand is a 16-bit register or a memory location that contains the segment selector for the segment to be verified.</p>
+<p>If the segment is accessible and readable (VERR) or writable (VERW), the ZF flag is set; otherwise, the ZF flag is cleared. Code segments are never verified as writable. This check cannot be performed on system segments.</p>
+<p>To set the ZF flag, the following conditions must be met:</p>
+<ul>
+<li>The segment selector is not null.</li>
+<li>The selector must denote a descriptor within the bounds of the descriptor table (GDT or LDT).</li>
+<li>The selector must denote the descriptor of a code or data segment (not that of a system segment or gate).</li>
+<li>For the VERR instruction, the segment must be readable.</li>
+<li>For the VERW instruction, the segment must be a writable data segment.</li>
+<li>If the segment is not a conforming code segment, the segment's DPL must be greater than or equal to (have less or the same privilege as) both the CPL and the segment selector's RPL.</li>
+</ul>
+<p>The validation performed is the same as is performed when a segment selector is loaded into the DS, ES, FS, or GS register, and the indicated access (read or write) is performed. The segment selector's value cannot result in a protection exception, enabling the software to anticipate possible segment access problems.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(Source.Offset &gt; GDTR.Limit || Source.Offset &gt; LDTR.Limit) {
+	ZF = 0;
+	SegmentDescriptor = ReadSegmentDescriptor();
+	if(SegmentDescriptor.Type == 0 /*system segment*/ || (!IsConformingCodeSegment(SegmentDescriptor.Type) &amp;&amp; (CPL &gt; DPL || RPL &gt; DPL))) ZF = 0;
+	else if((Instruction == VERR &amp;&amp; IsReadable(Segment)) || (Instruction == VERW &amp;&amp; IsWritable(Segment))) ZF = 1;
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>The ZF flag is set to 1 if the segment is accessible and readable (VERR) or writable (VERW); otherwise, it is set to 0.
+</p>
+</td>
+</tr>
+</table>
+</object>
+</div>
+</body>
+</html>

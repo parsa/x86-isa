@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>PADDB/PADDW/PADDD: Add Packed Integers (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>PADDB/PADDW/PADDD - Add Packed Integers</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F FC /r PADDB mm, mm/m64</code></td>
+<td><code>Add packed byte integers from mm/m64 and mm.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>66 0F FC /r PADDB xmm1,xmm2/m128</code></td>
+<td><code>Add packed byte integers from xmm2/m128 and xmm1.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>0F FD /r PADDW mm, mm/m64</code></td>
+<td><code>Add packed word integers from mm/m64 and mm.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>66 0F FD /r PADDW xmm1, xmm2/m128</code></td>
+<td><code>Add packed word integers from xmm2/m128 and xmm1.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>0F FE /r PADDD mm, mm/m64</code></td>
+<td><code>Add packed doubleword integers from mm/m64 and mm.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>66 0F FE /r PADDD xmm1, xmm2/m128</code></td>
+<td><code>Add packed doubleword integers from xmm2/m128 and xmm1.</code></td>
+<td></td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Performs an SIMD add of the packed integers from the source operand (second operand) and the destination operand (first operand), and stores the packed integer results in the destination operand. See Figure 9-4 in the IA-32 Intel Architecture Software Developer's Manual, Volume 1 for an illustration of an SIMD operation. Overflow is handled with wraparound, as described in the following paragraphs.</p>
+<p>These instructions can operate on either 64-bit or 128-bit operands. When operating on 64-bit operands, the destination operand must be an MMX technology register and the source operand can be either an MMX technology register or a 64-bit memory location. When operating on 128- bit operands, the destination operand must be an XMM register and the source operand can be either an XMM register or a 128-bit memory location.</p>
+<p>The PADDB instruction adds packed byte integers. When an individual result is too large to be represented in 8 bits (overflow), the result is wrapped around and the low 8 bits are written to the destination operand (that is, the carry is ignored).</p>
+<p>The PADDW instruction adds packed word integers. When an individual result is too large to be represented in 16 bits (overflow), the result is wrapped around and the low 16 bits are written to the destination operand.</p>
+<p>The PADDD instruction adds packed doubleword integers. When an individual result is too large to be represented in 32 bits (overflow), the result is wrapped around and the low 32 bits are written to the destination operand.</p>
+<p>Note that the PADDB, PADDW, and PADDD instructions can operate on either unsigned or signed (two's complement notation) packed integers; however, it does not set bits in the EFLAGS register to indicate overflow and/or a carry. To prevent undetected overflow conditions, software must control the ranges of values operated on.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">switch(Instruction) {
+	case PADDB:
+		if(OperandSize == 64) {
+			//PADDB instruction with 64-bit operands:
+			Destination[0..7] = Destination[0..7] + Source[0..7];
+			Destination[8..15] = Destination[8..15] + Source[8..15];
+			Destination[16..23] = Destination[16..23] + Source[16..23];
+			Destination[24..31] = Destination[24..31] + Source[24..31];
+			Destination[32..39] = Destination[32..39] + Source[32..39];
+			Destination[40..47] = Destination[40..47] + Source[40..47];
+			Destination[48..55] = Destination[48..55] + Source[48..55];
+			Destination[56..63] = Destination[56..63] + Source[56..63];
+		}
+		else {
+			//PADDB instruction with 128-bit operands:
+			Destination[0..7] = Destination[0..7] + Source[0..7];
+			Destination[8..15] = Destination[8..15] + Source[8..15];
+			Destination[16..23] = Destination[16..23] + Source[16..23];
+			Destination[24..31] = Destination[24..31] + Source[24..31];
+			Destination[32..39] = Destination[32..39] + Source[32..39];
+			Destination[40..47] = Destination[40..47] + Source[40..47];
+			Destination[48..55] = Destination[48..55] + Source[48..55];
+			Destination[56..63] = Destination[56..63] + Source[56..63];
+			Destination[64..71] = Destination[64..71] + Source[64..71];
+			Destination[72..79] = Destination[72..79] + Source[]72..79;
+			Destination[80..87] = Destination[80..87] + Source[80..87];
+			Destination[88..95] = Destination[88..95] + Source[88..95];
+			Destination[96..103] = Destination[96..103] + Source[96..103];
+			Destination[104..111] = Destination[104..111] + Source[104..111];
+			Destination[112..119] = Destination[112..119] + Source[112..119];
+			Destination[120..127] = Destination[120..111] + Source[120..127];
+		}
+		break;
+	case PADDW:
+		if(OperandSize == 64) {
+			//PADDW instruction with 64-bit operands:
+			Destination[0..15] = Destination[0..15] + Source[0..15];
+			Destination[16..31] = Destination[16..31] + Source[16..31];
+			Destination[32..47] = Destination[32..47] + Source[32..47];
+			Destination[48..63] = Destination[48..63] + Source[48..63];
+		}
+		else {
+			//PADDW instruction with 128-bit operands:
+			Destination[0..15] = Destination[0..15] + Source[0..15];
+			Destination[16..31] = Destination[16..31] + Source[16..31];
+			Destination[32..47] = Destination[32..47] + Source[32..47];
+			Destination[48..63] = Destination[48..63] + Source[48..63];
+			Destination[64..79] = Destination[64..79] + Source[64..79];
+			Destination[80..95] = Destination[80..95] + Source[80..95];
+			Destination[96..111] = Destination[96..111] + Source[96..111];
+			Destination[112..127] = Destination[112..127] + Source[112..127];
+		}
+		break;
+	case PADDD:
+		if(OperandSize == 64) {
+			//PADDD instruction with 64-bit operands:
+			Destination[31..0] = Destination[31..0] + Source[31..0];
+			Destination[63..32] = Destination[63..32] + Source[63..32];
+		}
+		else {
+			//PADDD instruction with 128-bit operands:
+			Destination[0..31] = Destination[0..31] + Source[0..31];
+			Destination[32..63] = Destination[32..63] + Source[32..63];
+			Destination[64..95] = Destination[64..95] + Source[64..95];
+			Destination[96..127] = Destination[96..127] + Source[96..127];
+		}
+		break;
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. 128-bit operations will generate #UD only if OSFXSR in CR4 is 0. Execution of 128-bit instructions on a non-SSE2 capable processor (one that is MMX technology capable) will result in the instruction operating on the mm registers, not #UD.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+<tr><td><code>#MF</code></td><td>(64-bit operations only) If there is a pending x87 FPU exception.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. 128-bit operations will generate #UD only if OSFXSR in CR4 is 0. Execution of 128-bit instructions on a non-SSE2 capable processor (one that is MMX technology capable) will result in the instruction operating on the mm registers, not #UD.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+Same exceptions as in Real Address Mode
+<div>
+<table>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>PADDB/PADDW/PADDD mm, mm</code></td><td>2/2/-</td><td>1/1/-</td><td>MMX_ALU</td></tr>
+<tr><td><code>PADDB/PADDW/PADDD xmm, xmm</code></td><td>2/2/1</td><td>2/2/1</td><td>MMX_ALU</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

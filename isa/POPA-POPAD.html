@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>POPA/POPAD: Pop All General-Purpose Registers (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>POPA/POPAD - Pop All General-Purpose Registers</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>61 POPA</code></td>
+<td><code>Pop DI, SI, BP, BX, DX, CX, and AX.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>61 POPAD</code></td>
+<td><code>Pop EDI, ESI, EBP, EBX, EDX, ECX, and EAX.</code></td>
+<td></td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Pops doublewords (POPAD) or words (POPA) from the stack into the general-purpose registers.</p>
+<p>The registers are loaded in the following order: EDI, ESI, EBP, EBX, EDX, ECX, and EAX (if the operand-size attribute is 32) and DI, SI, BP, BX, DX, CX, and AX (if the operand-size attribute is 16). (These instructions reverse the operation of the PUSHA/PUSHAD instructions.) The value on the stack for the ESP or SP register is ignored. Instead, the ESP or SP register is incremented after each register is loaded.</p>
+<p>The POPA (pop all) and POPAD (pop all double) mnemonics reference the same opcode. The POPA instruction is intended for use when the operand-size attribute is 16 and the POPAD instruction for when the operand-size attribute is 32. Some assemblers may force the operand size to 16 when POPA is used and to 32 when POPAD is used (using the operand-size override prefix [66H] if necessary). Others may treat these mnemonics as synonyms (POPA/POPAD) and use the current setting of the operand-size attribute to determine the size of values to be popped from the stack, regardless of the mnemonic used. (The D flag in the current code segment's segment descriptor determines the operand-size attribute.)</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(OperandSize == 32) {
+	//Instruction == POPAD
+	EDI = Pop();
+	ESI = Pop();
+	EBP = Pop();
+	ESP = ESP + 4; //skip next 4 bytes of stack
+	EBX = Pop();
+	EDX = Pop();
+	ECX = Pop();
+	EAX = Pop();
+}
+else {
+	//OperandSize == 16, instruction == POPA
+	DI = Pop();
+	SI = Pop();
+	BP = Pop();
+	ESP = ESP + 2; //skip next 2 bytes of stack
+	BX = Pop();
+	DX = Pop();
+	CX = Pop();
+	AX = Pop();
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+</div>
+</body>
+</html>

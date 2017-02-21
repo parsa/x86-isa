@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>PAVGB/PAVGW: Average Packed Integers (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>PAVGB/PAVGW - Average Packed Integers</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F E0 /r PAVGB mm1, mm2/m64 Average packed unsigned byte integers from mm2/m64 and mm1 with rounding.</code></td>
+<td><code></code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>66 0F E0, /r PAVGB xmm1, xmm2/m128 Average packed unsigned byte integers from xmm2/m128 and xmm1 with rounding.</code></td>
+<td><code></code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>0F E3 /r PAVGW mm1, mm2/m64 Average packed unsigned word integers from mm2/m64 and mm1 with rounding.</code></td>
+<td><code></code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>66 0F E3 /r PAVGW xmm1, xmm2/m128 Average packed unsigned word integers from xmm2/m128 and xmm1 with rounding.</code></td>
+<td><code></code></td>
+<td></td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Performs an SIMD average of the packed unsigned integers from the source operand (second operand) and the destination operand (first operand), and stores the results in the destination operand. For each corresponding pair of data elements in the first and second operands, the elements are added together, a 1 is added to the temporary sum, and that result is shifted right one bit position. The source operand can be an MMX technology register or a 64-bit memory location or it can be an XMM register or a 128-bit memory location. The destination operand can be an MMX technology register or an XMM register.</p>
+<p>The PAVGB instruction operates on packed unsigned bytes and the PAVGW instruction operates on packed unsigned words.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">switch(Instruction) {
+	case PAVGB:
+		if(OperandSize == 64) {
+			//PAVGB instruction with 64-bit operands:
+			//temporary sum before shifting is 9 bits
+			Source[0..7] = (Source[0..7] + Destination[0..7] + 1) &gt;&gt; 1;
+			Source[8..15] = (Source[8..15] + Destination[8..15] + 1) &gt;&gt; 1;
+			Source[16..23] = (Source[16..23] + Destination[16..23] + 1) &gt;&gt; 1;
+			Source[24..31] = (Source[24..31] + Destination[24..31] + 1) &gt;&gt; 1;
+			Source[32..39] = (Source[32..39] + Destination[32..39] + 1) &gt;&gt; 1;
+			Source[40..47] = (Source[40..47] + Destination[40..47] + 1) &gt;&gt; 1;
+			Source[48..55] = (Source[48..55] + Destination[48..55] + 1) &gt;&gt; 1;
+			Source[56..63] = (Source[56..63] + Destination[56..63] + 1) &gt;&gt; 1;
+		}
+		else {
+			//PAVGB instruction with 128-bit operands:
+			//temporary sum before shifting is 9 bits
+			Source[0..7] = (Source[0..7] + Destination[0..7] + 1) &gt;&gt; 1;
+			Source[8..15] = (Source[8..15] + Destination[8..15] + 1) &gt;&gt; 1;
+			Source[16..23] = (Source[16..23] + Destination[16..23] + 1) &gt;&gt; 1;
+			Source[24..31] = (Source[24..31] + Destination[24..31] + 1) &gt;&gt; 1;
+			Source[32..39] = (Source[32..39] + Destination[32..39] + 1) &gt;&gt; 1;
+			Source[40..47] = (Source[40..47] + Destination[40..47] + 1) &gt;&gt; 1;
+			Source[48..55] = (Source[48..55] + Destination[48..55] + 1) &gt;&gt; 1;
+			Source[56..63] = (Source[56..63] + Destination[56..63] + 1) &gt;&gt; 1;
+			Source[64..71] = (Source[64..71] + Destination[64..71] + 1) &gt;&gt; 1;
+			Source[72..79] = (Source[72..79] + Destination[72..79] + 1) &gt;&gt; 1;
+			Source[80..87] = (Source[80..87] + Destination[80..87] + 1) &gt;&gt; 1;
+			Source[88..95] = (Source[88..95] + Destination[88..95] + 1) &gt;&gt; 1;
+			Source[96..103] = (Source[96..103] + Destination[96..103] + 1) &gt;&gt; 1;
+			Source[104..111] = (Source[104..111] + Destination[104..111] + 1) &gt;&gt; 1;
+			Source[112..119] = (Source[112..119] + Destination[112..119] + 1) &gt;&gt; 1;
+			Source[120..127] = (Source[120..127] + Destination[120..127] + 1) &gt;&gt; 1;
+		}
+		break;
+	case PAVGW:
+		if(OperandSize == 64) {
+			//PAVGW instruction with 64-bit operands:
+			//temporary sum before shifting is 17 bits
+			Source[0..15] = (Source[0..15] + Destination[0..15] + 1) &gt;&gt; 1;
+			Source[16..31] = (Source[16..31] + Destination[16..31] + 1) &gt;&gt; 1;
+			Source[32..47] = (Source[32..47] + Destination[32..47] + 1) &gt;&gt; 1;
+			Source[48..63] = (Source[48..63] + Destination[48..63] + 1) &gt;&gt; 1;
+		}
+		else {
+			//PAVGW instruction with 128-bit operands:
+			//temporary sum before shifting is 17 bits
+			Source[0..15] = (Source[0..15] + Destination[0..15] + 1) &gt;&gt; 1;
+			Source[16..31] = (Source[16..31] + Destination[16..31] + 1) &gt;&gt; 1;
+			Source[32..47] = (Source[32..47] + Destination[32..47] + 1) &gt;&gt; 1;
+			Source[48..63] = (Source[48..63] + Destination[48..63] + 1) &gt;&gt; 1;
+			Source[64..79] = (Source[64..79] + Destination[64..79] + 1) &gt;&gt; 1;
+			Source[80..95] = (Source[80..95] + Destination[80..95] + 1) &gt;&gt; 1;
+			Source[96..111] = (Source[96..111] + Destination[96..111] + 1) &gt;&gt; 1;
+			Source[112..127] = (Source[112..127] + Destination[112..127] + 1) &gt;&gt; 1;
+		}
+		break;
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. (128-bit operations only) If OSFXSR in CR4 is 0. (128-bit operations only) If CPUID feature flag SSE2 is 0.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+<tr><td><code>#MF</code></td><td>(64-bit operations only) If there is a pending x87 FPU exception.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. (128-bit operations only) If OSFXSR in CR4 is 0. (128-bit operations only) If CPUID feature flag SSE2 is 0.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+Same exceptions as in Real Address Mode
+<div>
+<table>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Numeric Exceptions</th>
+</tr>
+<tr>
+<td>
+None.
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>PAVGB/PAVGW mm, mm</code></td><td>2/2/-</td><td>1/1/-</td><td>MMX_ALU</td></tr>
+<tr><td><code>PAVGB/PAVGW xmm, xmm</code></td><td>2/2/-</td><td>2/2/-</td><td>MMX_ALU</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

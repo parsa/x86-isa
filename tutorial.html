@@ -1,0 +1,3681 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>x86 Assembly for Userland Applications: A Hands-On Approach</title>
+    <link rel="stylesheet" href="assets/style.css" />
+    <link rel="icon" type="image/ico" href="favicon.ico" />
+    <meta name="keywords"
+    content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+    <meta name="description"
+    content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+    <meta name="robots" content="index, follow" />
+    <script type="text/javascript" async=""
+    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" href="assets/highlight-github.css">
+	<script async="" type="text/javascript" src="assets/highlight.pack.js"></script>
+  </head>
+  <body>
+    <div class="container">
+    <h1>x86 Assembly for Userland Applications: A Hands-On Approach</h1>
+    <blockquote>
+      <p>Source: <a href="https://github.com/epicvrvs/x86-tutorial">https://github.com/epicvrvs/x86-tutorial</a></p>
+      <div class="overview">
+      <div>
+        <ul>
+          <li>
+            <a href="#Introduction">1. Introduction</a>
+          </li>
+          <li>
+            <a href="#WhatisAssembly">2. What is Assembly?</a>
+          </li>
+          <li>
+            <a href="#WhatisthePurposeofLearningAssembly">3. What is the Purpose of Learning Assembly?</a>
+          </li>
+          <li>
+            <a href="#Gettingtoknowthex86Architecture">4. Getting to know the x86 Architecture</a>
+          </li>
+          <li>
+            <a href="#BitsBytesandNumbers">5. Bits, Bytes and Numbers</a>
+          </li>
+          <li>
+            <a href="#BitOperations">6. Bit Operations</a>
+          </li>
+          <li>
+            <a href="#SignedIntegers">7. Signed Integers</a>
+          </li>
+          <li>
+            <a href="#TheFirstSteps">8. The First Steps</a>
+          </li>
+          <li>
+            <a href="#WritingWindowsApplicationsUsingx8632bitAssembly">9. Writing Windows Applications Using x86 32-bit
+            Assembly</a>
+          </li>
+          <li>
+            <ul>
+              <li>
+                <a href="#MASM">9.1 MASM</a>
+              </li>
+              <li>
+                <a href="#FASM">9.2 FASM</a>
+              </li>
+              <li>
+                <a href="#NASM">9.3 NASM</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#WritingLinuxBSDApplicationsUsingx8632bitAssembly">10. Writing Linux/BSD Applications Using x86 32-bit
+            Assembly</a>
+          </li>
+          <li>
+            <ul>
+              <li>
+                <a href="#as">10.1 as</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#PartialRegisters">11. Partial Registers</a>
+          </li>
+          <li>
+            <a href="#Addresses">12. Addresses</a>
+          </li>
+          <li>
+            <a href="#ControlStructures">13. Control Structures</a>
+          </li>
+          <li>
+            <a href="#MultiplicationandDivisionofIntegers">14. Multiplication and Division of Integers</a>
+          </li>
+          <li>
+            <a href="#FloatingPointOperations">15. Floating Point Operations</a>
+          </li>
+        </ul>
+      </div>
+    </blockquote>
+    <h1 id="Introduction">Introduction</h1>
+    <p>This document is an introduction to creating programs for microprocessors of the 
+    <b>x86 architecture family</b> - in particular 32-bit code. The reader is expected to be familiar with programming in 
+    <b>C/C++</b> (or similar languages such as Java at least) and the essential API of the operating system they are using. Some
+    mathematical knowledge up to highschool/university level is essential for understanding a lot of things aswell. I will try not
+    to be too OS specific but the environments I am going to focus on in this document are 
+    <b>Windows</b>, 
+    <b>Linux</b> and 
+    <b>BSD</b>. Pure knowledge of assembly in itself is useless if you do not know how to combine it with the API of the operating
+    system you are going to run it on so I want to make sure that this will be demonstrated to a certain extent. It is not that
+    different from the way you would do it in a high level programming language such as C++ so it is not difficult to
+    understand.</p>
+    <h1 id="WhatisAssembly">What is Assembly?</h1>
+    <p>Assembly (short 
+    <b>ASM</b>) is the lowest level programming possible - if you are a programmer and you want to get as close to the hardware as
+    you can get then this is the place you want to be. In assembly code you get to control every single instruction that your CPU
+    (central processing unit) is going to execute. There are different assembly languages for different microprocessor
+    architectures and all of them are different from each other. Usually they are totally incompatible so you will have to write
+    assembly code that is specific to the particular architecture you want your program to run on. In assembly you write
+    instructions using the ASCII character set which directly represent machine code instructions that are executed by your
+    processor. The names of these instructions are usually extremely short and are often abbreviations of full names. These
+    assembly instruction names are called 
+    <b>mnemonics</b>.</p>
+    <p>Before your microprocessor can actually run the program you have written in assembly you will have to run it through a
+    program which translates all the mnemonics and arguments to numerical machine code. This program is called an 
+    <b>assembler</b>. Assemblers often also support more features than just the pure instructions to make the jobs easier for the
+    programmers but you will see how they do that later on.</p>
+    <h1 id="WhatisthePurposeofLearningAssembly">What is the Purpose of Learning Assembly?</h1>
+    <p>This is a very important question and subject to a lot of discussion. My answer to this question is a list of reasons,
+    really. Better understanding of what goes on at the lowest level can make you a better programmer at a higher level. It allows
+    you to see what goes on behind the scenes and it often gives you a totally new perspective on things. It has its uses in
+    writing high performance parts of high level language programming where you need to use features of your processor that are not
+    easily accessible in that high level language. Knowing assembly is obviously also necessary to be able to write compilers for a
+    particular microprocessor architecture which convert high level language code to machine instructions.</p>
+    <p>The truth is that most people learn x86 ASM nowadays to crack commercial software, to reverse engineer closed source
+    programs and to write cheats for computer games. Cracking is the one that made me learn it but I have to admit that I never got
+    particularly good at it and I got totally distracted from my original goal in the process of understanding how it works. It is
+    my experience that it is essential to learn how to write x86 ASM yourself first in order to be successful at cracking and
+    reverse engineering. Knowing how to manually translate a C++ program to assembly is a valuable skill to have for this
+    purpose.</p>
+    <h1 id="Gettingtoknowthex86Architecture">Getting to know the x86 Architecture</h1>
+    <p>So, what are we dealing with here? The IA-32 microprocessor is basically a 
+    <b>register machine</b> which uses a 
+    <b>CISC</b> (complex instruction set computer) instruction set. At first I am going to explain what a register machine is.
+    After that I will move on to the CISC part.</p>
+    <p>A register machine is a computing device which stores results of arithmetic operations and such primarily in so called 
+    <b>registers</b>. These are small but highly efficient binary storage units inside the processor which can hold integer values.
+    When you are doing assembly programming you deal with them all the time. They are incapable of holding a lot of data at once
+    but they are essential as temporary placeholders used in most instructions executed by the processor. In the terms of the 
+    <b>memory hierarchy</b> of contemporary computers they are at the very top. The hierarchy looks like this:</p>
+    <ol>
+      <li>CPU registers</li>
+      <li>CPU cache</li>
+      <li>RAM (random access memory)</li>
+      <li>HDD (hard disk drive storage)</li>
+      <li>External storage, even optical media like CDs, DVDs, BluRay disks and such</li>
+    </ol>
+    <p>Registers hold minimal amounts of data and are extremely fast. The cache holds far larger amounts of data but it is still
+    pretty fast. The RAM holds even larger amounts of data and it is far slower (in terms of both bandwidth and latency) than any
+    memory operation inside a CPU. Hard disks have an even larger capacity than your RAM and they are very slow in comparison to
+    the objects at the top of the hierarchy.</p>
+    <p>At this point I should probably briefly explain what the CPU cache actually is. It is a small high performance storage unit
+    inside your CPU to which chunks of memory from the RAM are copied whenever you perform memory accesses. This way the CPU does
+    not have to access the RAM over and over again when it is processing the same piece of data. This speeds up the execution of
+    code a lot - RAM access is vey slow in comparison to cache access after all. In reality this cache is actually not a single
+    unit but it is divided into multiple 
+    <b>cache levels</b>. The Level 1 Cache is the smallest but fastest one. The next level is bigger but slower and so on. Caching
+    is not of much interest to somebody who is new to assembly, though. I might cover this topic later in sections with deal with
+    optimising code for speed.</p>
+    <p>Let us get back to the CISC part I mentioned earlier. There are two major microprocessor architecture philosophies known as 
+    <b>RISC</b> (reduced instruction set computing) and 
+    <b>CISC</b> (complex instruction set computing). In RISC architectures instructions are rather simple and perform very
+    fundamental operations. RISC instructions are incapable of performing multiple actions at once but they are very fast. The
+    instruction format for RISC architectures is usually quite uniform and each instruction takes up the same number of bytes in
+    memory. This makes them very easy to decode for the processor. CISC architectures generally feature complex instructions which
+    perform multiple tasks sequentially, like loading a value from memory, peforming an arithmetic operation on it and then writing
+    the result of the operation into memory. In a RISC architecture this would be divided into multiple instructions. CISC
+    instructions are usually of variable length and they are very complicated to decode for the CPU.</p>
+    <table>
+      <tr>
+        <th>Property</th>
+        <th>RISC</th>
+        <th>CISC (x86)</th>
+      </tr>
+      <tr>
+        <td>Instruction encoding</td>
+        <td>Uniform, all instructions are the same size</td>
+        <td>Variable, the size of instructions strongly varies</td>
+      </tr>
+      <tr>
+        <td>Complexity of operations</td>
+        <td>Simple, each instruction performs one fundamental operation</td>
+        <td>Complex, each instruction can perform many fundamental operations</td>
+      </tr>
+      <tr>
+        <td>Code density</td>
+        <td>Low</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>Decoding effort for the CPU</td>
+        <td>Low</td>
+        <td>High</td>
+      </tr>
+    </table>
+    <h1 id="BitsBytesandNumbers">Bits, Bytes and Numbers</h1>
+    <p>A bit is simply the smallest digital piece of information possible. To us, it is a rather abstract unit which can have two
+    values, zero or one. A byte is composed of a certain number of bits. On all mainstream architectures a byte is composed of
+    exactly 8 bits. In this document we focus on the x86 32-bit architecture. The 32-bit part means that the 
+    <b>word size</b> of this processor is 32 bits. The word size of a microprocessor tells you what size most registers and
+    operands are. So in this case all 
+    <b>general purpose registers</b> are 32 bits = 4 bytes in size. It would be more precise to say &quot;octet&quot; instead of
+    byte in that case, which is the terminology you usually encounter in literature on the subject of networking. In this text I
+    will stick to bytes, though. General purpose means that we, the programmers, can pretty much use these registers as we want
+    without breaking anything. They are meant to be used for all major calculations. There are special registers such as the 
+    <b>stack pointer</b>, which may not be used in such a way. In fact, that would usually result in a crash at some point, but we
+    will get back to that later. Our registers consist of 32 single bits which can each assume two different values. This means
+    that each register can assume one of \(2^{32}\) (that is: 2 to the power of 32) different values at a time.</p>
+    <p>There are different systems of representing numbers using digits (which can actually be arbitrary symbols) such as our
+    decimal system. At this point it is important to introduce the concept of the 
+    <b>positional notation</b>. Positional notation is a method which takes a base \(b \in \mathbb{N}\) and a set of digits \(D =
+    \bigcup_{i = 0}^{b - 1} \{d_i\}\) with values \(v : D \to \mathbb{N}\), \(v(d_i) = i\). I hope I did not scare anybody away
+    with those equations - I should probably clarify. \(b\) is a natural number - a positive integer like 1, 2, 3, etc. \(D\) is
+    the union of the digits which are associated with the numerical values 0 to \(b - 1\). In a positional system the number which
+    is composed of the digits \(d_{(a_n)} \ldots d_{(a_1)}\) actually represents the natural number \(\sum_{i = 0}^{b - 1}
+    v(d_{(a_i)}) b^i = \sum_{i = 0}^{b - 1} a_i b^i\).</p>
+    <p>The decimal system is actually a positional system with \(b = 10\). So we have the digits \(\) with the corresponding
+    values. According to the equation the decimal number 913 represents the natural number \(9 \cdot 100 + 1 \cdot 10 + 3 \cdot 1 =
+    913\).</p>
+    <p>Now that was fairly obvious but let us move on to other systems such as the hexadecimal one, which is quite frequently used
+    in the world of programming, especially in assembly languages. In the hexadecimal system we deal with the base \(b = 16\) and
+    the digits \(D_{16} = \{0 \ldots 9, A, B, C, D, E, F\}\). So A stands for 10, B for 11, and so on. So the hexadecimal number
+    F4D7 actually represents the natural number \(15 \cdot 16^3 + 4 \cdot 16^2 + 13 \cdot 16^1 + 7 \cdot 16^0 = 15 \cdot 4096 + 4
+    \cdot 256 + 13 \cdot 16 + 7 \cdot 1 = 61440 + 1024 + 208 + 7 = 62679\).</p>
+    <p>Then there is of course the binary system which has the digits \(D_2 = \{0, 1\}\). The binary number 1101001 represents the
+    natural number \(1 \cdot 2^6 + 1 \cdot 2^5 + 0 \cdot 2^4 + 1 \cdot 2^3 + 0 \cdot 2^2 + 0 \cdot 2^1 + 1 \cdot 2^0 = 1 \cdot 64 +
+    1 \cdot 32 + 0 \cdot 16 + 1 \cdot 8 + 0 \cdot 4 + 0 \cdot 2 + 1 \cdot 1 = 105\). This is pretty much exactly the way unsigned
+    numbers are stored at the hardware level in the registers of your x86 microprocessor. The single binary digits represent the
+    bits in the register. But the binary number 1101001 has 7 bits and our 32-bit registers have 32 bits. What happens to the other
+    25 bits? The upper bits are simply set to 0, so the register would actually be set to 00000000000000000000000001101001.</p>
+    <h1 id="BitOperations">Bit Operations</h1>
+    <p>In the introduction I stated that this document is intended for people who already know a high level programming language
+    which also implies knowledge about the six essential binary operations but I would still like to introduce them at this point.
+    I will use the C operators 
+    <code>&amp;</code> for 
+    <code>AND</code>, 
+    <code>|</code> for 
+    <code>OR</code>, 
+    <code>~</code> for 
+    <code>NOT</code>, 
+    <code>^</code> for 
+    <code>XOR</code>, 
+    <code>&lt;&lt;</code> for 
+    <code>SHIFT LEFT</code> and 
+    <code>&gt;&gt;</code> for 
+    <code>SHIFT RIGHT</code> in this document. Let&#39;s start with 
+    <code>AND</code>. It takes two bits as input and outputs a single bit. If you do not fully grasp these operations yet I suggest
+    taking a few moments to totally digest and appreciate their output. So what is the 
+    <code>AND</code> operation usually used for? We use it to set particular bits of an integer to 0, to &quot;mask off&quot;
+    particular ranges of bits we do not care about.</p>
+    <table class="function">
+      <tr>
+        <th>a</th>
+        <th>b</th>
+        <th>
+          <code>a &amp; b</code>
+        </th>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>1</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+      </tr>
+    </table>
+    <p>Now for the 
+    <code>OR</code> operator. Like 
+    <code>AND</code> it takes two bits as input and has a single bit as output. We use it to set particular bits of an integer to
+    1:</p>
+    <table class="function">
+      <tr>
+        <th>a</th>
+        <th>b</th>
+        <th>
+          <code>a | b</code>
+        </th>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>1</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>0</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>1</td>
+        <td>1</td>
+      </tr>
+    </table>
+    <p>The 
+    <code>NOT</code> operator inverts bits so it takes one argument instead of two like the previous operators:</p>
+    <table class="function">
+      <tr>
+        <th>a</th>
+        <th>
+          <code>~a</code>
+        </th>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>0</td>
+      </tr>
+    </table>
+    <p>The 
+    <code>XOR</code> operator is used to &quot;flip&quot; bits. It is not an essential function, meaning that it can be expressed
+    with the help of 
+    <code>AND</code>, 
+    <code>OR</code> and 
+    <code>NOT</code>. Its primary purpose curiously is setting registers to zero but we will get to that later. It is also very
+    useful for pseudo random number and encryption algorithms.</p>
+    <table class="function">
+      <tr>
+        <th>a</th>
+        <th>b</th>
+        <th>
+          <code>a ^ b</code>
+        </th>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>0</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>0</td>
+        <td>1</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>0</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td>1</td>
+        <td>0</td>
+      </tr>
+    </table>
+    <p>The bit shift operations 
+    <code>SHIFT LEFT</code> and 
+    <code>SHIFT RIGHT</code> cannot be described in compact tables like the other ones. They shift the bits inside the register to
+    the left or to the right, discarding information as bits &quot;are pushed out&quot; and shifting new 0-bits in. The first
+    operand for a shift operation is the number that will get shifted. The second operator describes the number of bits that are
+    shifted in and out. Here are a few examples on 32-bit numbers to clarify what these operations mean:</p>
+    <table class="function">
+      <tr>
+        <th>a</th>
+        <th>b</th>
+        <th>
+          <code>a &lt;&lt; b</code>
+        </th>
+      </tr>
+      <tr>
+        <td>
+          <code>11010001010010100001101010001010</code>
+        </td>
+        <td>1</td>
+        <td>
+          <span class="monospace">1010001010010100001101010001010<span class="bitShift">0</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>00000000100000001100000001011111</code>
+        </td>
+        <td>3</td>
+        <td>
+          <span class="monospace">10001010010100001101010001010<span class="bitShift">000</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>11100000010100110001010010111010</code>
+        </td>
+        <td>2</td>
+        <td>
+          <span class="monospace">010001010010100001101010001010<span class="bitShift">00</span></span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>00001001101110000000001110000000</code>
+        </td>
+        <td>29</td>
+        <td>
+          <span class="monospace">000<span class="bitShift">00000000000000000000000000000</span></span>
+        </td>
+      </tr>
+    </table>
+    <table class="function">
+      <tr>
+        <th>a</th>
+        <th>b</th>
+        <th>
+          <code>a &gt;&gt; b</code>
+        </th>
+      </tr>
+      <tr>
+        <td>
+          <code>11010001010010100001101010001010</code>
+        </td>
+        <td>1</td>
+        <td>
+          <span class="monospace"><span class="bitShift">0</span>1101000101001010000110101000101</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>00000000100000001100000001011111</code>
+        </td>
+        <td>3</td>
+        <td>
+          <span class="monospace"><span class="bitShift">000</span>00000000100000001100000001011</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>11100000010100110001010010111010</code>
+        </td>
+        <td>2</td>
+        <td>
+          <span class="monospace"><span class="bitShift">00</span>010001010010100001101010001010</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>00001001101110000000001110000000</code>
+        </td>
+        <td>27</td>
+        <td>
+          <span class="monospace"><span class="bitShift">000000000000000000000000000</span>00001</span>
+        </td>
+      </tr>
+    </table>
+    <h1 id="SignedIntegers">Signed Integers</h1>
+    <p>We have seen how unsigned integers are encoded in the 32-bit registers of the microprocessor but surely the x86 architecture
+    has to deal with signed integers aswell. There are different systems of representing signed integers using binary encodings.
+    The most intuitive approach is to sacrifice one bit (the &quot;left-most&quot; one) to represent the sign of the integer. This
+    system is called 
+    <b>sign and magnitude</b> and the bit we sacrificed is called the 
+    <b>sign bit</b>. A sign bit of 0 stands for the lack of the minus and the sign bit of 1 means that the number is signed. The
+    absolute value is expressed in all the other bits. In an 8-bit register the binary number 10011100 represents the integer \(-
+    (16 + 8 + 4) = - 28\). One irritating property of this system is that there are two representations for the number 0: 
+    <code>00000000</code>, 
+    <code>10000000</code> - a &quot;positive&quot; zero and a &quot;negative&quot; zero - which is obviously a waste. The actual
+    major problem with this system is that it is very annoying to perform addition and subtraction in it because there are three
+    different cases to be dealt with (positive + positve, positive + negative, negative + negative).</p>
+    <p>Another possibility is to represent the negative version of the natural number \(n \in \mathbb{N}\), \(-n\), by inverting
+    all its bits (see 
+    <code>NOT</code> operation). Hence this system is called 
+    <b>One&#39;s Complement</b>. This way also one bit is sacrificed to represent the sign and there are two representations of the
+    number zero again. So the negative version of 00001111 (which is 15) is 11110000 (which is -15) in our hypothetical 8 bit
+    register. The advantage of this system is that it makes addition/subtraction easier. Consider the operation -7 + 3: 11111000 +
+    00000011 = 11111011, which is the One&#39;s Complement representation of -4. As you can see we can reduce the complexity of
+    arithmetic operations this way as long as we don&#39;t cross the zero barrier. Consider the case -1 + 2: 11111110 + 00000010 =
+    00000000. This is obviously the wrong result, - 1 + 2 is not zero, it&#39;s 1! Every time you cross the &quot;zero
+    barrier&quot; in One&#39;s Complement you have to fix the result by offsets of 1.</p>
+    <p>So to solve this problem smart computer scientists came up with 
+    <b>Two&#39;s Complement</b>. It is similar to One&#39;s Complement but all negative numbers have an additional offset of 1.
+    This way there is no redundant zero and you can flawlessly perform arithmetic operations without having to worry about the sign
+    really. Two&#39;s Complement is the system used by all important mainstream CPUs in desktop computers including the x86
+    architecture - so be sure to understand this. 
+    <b>There is no inherent difference between storing an unsigned integer and a signed integer in a 32-bit register - it is all
+    about how you treat it.</b> The 32-bit value 11111111111111111111111111111111 can either stand for \(2^{32} - 1 = 4294967295\)
+    (which is the greatest unsigned integer that can be represented with 32 bits) or, if interpreted as negative number, for -1. To
+    calculate the Two&#39;s Complement representation of \(-n\) with \(n \in \mathbb{N}\) you need to:</p>
+    <ol>
+      <li>Subtract 1</li>
+      <li>Invert bits</li>
+    </ol>
+    <p>All of these operations are injective so you can simply reverse the order and invert the type of the operations in these two
+    steps in order to convert a negative number to its positive representation. Let&#39;s have a look at the representations of a
+    few integers in Two&#39;s Complement encoding:</p>
+    <table class="function">
+      <tr>
+        <th>Signed decimal number</th>
+        <th>Two&#39;s Complement encoding</th>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td>
+          <code>00000000000000000000000000010111</code>
+        </td>
+      </tr>
+      <tr>
+        <td>-1</td>
+        <td>
+          <code>11111111111111111111111111111111</code>
+        </td>
+      </tr>
+      <tr>
+        <td>-2</td>
+        <td>
+          <code>11111111111111111111111111111110</code>
+        </td>
+      </tr>
+      <tr>
+        <td>-3</td>
+        <td>
+          <code>11111111111111111111111111111101</code>
+        </td>
+      </tr>
+      <tr>
+        <td>-2147483648</td>
+        <td>
+          <code>10000000000000000000000000000000</code>
+        </td>
+      </tr>
+      <tr>
+        <td>2147483647</td>
+        <td>
+          <code>01111111111111111111111111111111</code>
+        </td>
+      </tr>
+    </table>
+    <p>As you can see the greatest signed number that can be represented with Two&#39;s Complement is 2147483647 and the lowest one
+    is -2147483648.</p>
+    <h1 id="TheFirstSteps">The First Steps</h1>
+    <p>Now that we have covered most of the basics we can finally get started with some x86 ASM. I am going to use Intel syntax for
+    now which is far more popular and more intuitive than AT&amp;T syntax. Let&#39;s have a look at the following code:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+mov eax, 1 
+mov ebx, 10 
+xor ecx, ecx 
+our_loop :
+add ecx, eax 
+inc eax 
+cmp eax, ebx 
+jle our_loop
+    </pre></code>
+    <p>Most of these lines represent an instruction that gets executed by the processor. The pattern is 
+    <code>instruction [argument 1], [argument 2], ...</code>. Let&#39;s go through it line by line. 
+    <code>mov eax, 1</code> calls the instruction 
+    <code>mov</code> with the arguments 
+    <code>eax</code> and 
+    <code>1</code>. The 
+    <code>mov destination, source</code> operator is kind of like the assignment operator in C++. It copies the value of 
+    <code>source</code> to 
+    <code>destination</code>. In this case it writes the constant 1 to the 32-bit general purpose register 
+    <code>eax</code>. That is one of the registers we can use for all kinds of calculations without breaking anything. Here is a
+    list of all the 32-bit general purpose registers of the x86 architecture:</p>
+    <ol>
+      <li>
+        <code>eax</code>
+      </li>
+      <li>
+        <code>ebx</code>
+      </li>
+      <li>
+        <code>ecx</code>
+      </li>
+      <li>
+        <code>edx</code>
+      </li>
+      <li>
+        <code>edi</code>
+      </li>
+      <li>
+        <code>esi</code>
+      </li>
+      <li>
+        <code>ebp</code>
+      </li>
+    </ol>
+    <p>As you can see they have different naming patterns and historically some of them are used by special instructions which
+    hardly appear in modern code, though. They are mostly still supported for legacy reasons but they are inefficient and are not
+    produced by modern compilers. After that instruction has been processed the 
+    <b>instruction pointer</b> gets increased. The instruction pointers contains of the current address that is being executed. The
+    instruction pointer of the x86 architecture is stored in the 32-bit register 
+    <code>eip</code>. So 
+    <code>eip</code> gets increased by the length of the 
+    <code>mov eax, 1</code> instruction after it has been executed and 
+    <code>eip</code> points towards the next instruction which is 
+    <code>mov ebx, 10</code>. As you might have guessed, 
+    <code>mov ebx, 10</code> writes the value 10 to the register 
+    <code>ebx</code>. But now it gets interesting. 
+    <code>xor ecx, ecx</code> is basically the x86 ASM equivalent of the C++ code 
+    <code>ecx ^= ecx;</code>. You might ask: What is the point? The educated mind sees immediately that 
+    <code>a ^ a</code> is equal to zero for all values of 
+    <code>a</code>. So what this basically is does is setting 
+    <code>ecx</code> to zero. So you might wonder why you do not use 
+    <code>mov ecx, 0</code> instead. Well, you could, but 
+    <code>xor ecx, ecx</code> is actually shorter because it does not involve any constant. By always using 
+    <code>xor reg, reg</code> instead we reduce the overall file size of our binaries and this can save time and space. But this
+    instruction does more than just modify the 
+    <code>ecx</code> register. The x86 microprocessor has a set of so called 
+    <b>flags</b>. These are 1 bit values which are used for conditional jumps and other operations. We do not think about them most
+    of the time and it is not too relevant for writing conventional code but it is absolutely essential to know how they exist,
+    what they are good for and how they are set. All arithmetic-logical operations set some of these flags. The 
+    <code>mov</code> instruction does not modify the flags but the 
+    <code>xor</code> instruction sets several of them. The Intel x86 Instruction Set Reference says: &quot;The 
+    <code>OF</code> and 
+    <code>CF</code> flags are cleared; the 
+    <code>SF</code>, 
+    <code>ZF</code>, and 
+    <code>PF</code> flags are set according to the result. The state of the 
+    <code>AF</code> flag is undefined.&quot; You can look up such data up in the original PDF document released by Intel. Here is a
+    list of the most important x86 flags and what they stand for:</p>
+    <table class="function">
+      <tr>
+        <th>Abbreviation</th>
+        <th>Full name</th>
+      </tr>
+      <tr>
+        <td>
+          <code>CF</code>
+        </td>
+        <td>Carry Flag</td>
+      </tr>
+      <tr>
+        <td>
+          <code>PF</code>
+        </td>
+        <td>Parity Flag</td>
+      </tr>
+      <tr>
+        <td>
+          <code>ZF</code>
+        </td>
+        <td>Zero Flag</td>
+      </tr>
+      <tr>
+        <td>
+          <code>SF</code>
+        </td>
+        <td>Sign Flag</td>
+      </tr>
+      <tr>
+        <td>
+          <code>OF</code>
+        </td>
+        <td>Overflow Flag</td>
+      </tr>
+    </table>
+    <p>When you perform the addition of two large unsigned 32-bit numbers the result can obviously be too large to be stored in a
+    32-bit register so what you get is a so called 
+    <b>wraparound</b> or an 
+    <b>overflow</b>. Consider the addition of the following numbers:</p>
+    <table class="bitAddition">
+      <tr>
+        <th>Description</th>
+        <th>Binary value</th>
+      </tr>
+      <tr>
+        <td>Summand 1</td>
+        <td>
+          <code>11111111111111111111111111111111</code>
+        </td>
+      </tr>
+      <tr>
+        <td>Summand 2</td>
+        <td>
+          <code>+ 00000000000000000000000000000001</code>
+        </td>
+      </tr>
+      <tr>
+        <td>Sum</td>
+        <td>
+          <span class="monospace"><span class="bitShift">1</span>00000000000000000000000000000000</span>
+        </td>
+      </tr>
+    </table>
+    <p>The result requires at least 33 bits to be displayed properly using Two&#39;s Complement. So the bit that has been marked
+    red is basically discarded and not stored in the target register - instead it gets stored in the 
+    <b>Carry Flag</b>. The Carry Flag is basically always the &quot;33rd&quot; bit. Actually This is not a 1 bit value but it is a
+    single bit at offset 0 in a 32 bit register known as the 
+    <b>FLAGS register</b>. This is where all the flags are stored - so obviously there are far more flags than just the ones listed
+    above but most of them are not of any relevance for writing user land applications. The 
+    <b>Parity Flag</b> is set to 1 if the number of 1-bits in the right most 8 bits of the result contains an even number of
+    1-bits. It is set to 0 otherwise. It is basically the result of 
+    <code>XOR</code>ing those 8 bits with each other and eventually inverting the result. The 
+    <b>Zero Flag</b> is set when the the result is equal to zero - very useful. The 
+    <b>Sign Flag</b> is the left most bit of he 32-bit result - it represents its sign. The 
+    <b>Overflow Flag</b> is set when an overflow occured.</p>
+    <p>But let us get back to the actual code we were discussing. So none of the flags that are set by most arithmetic logical
+    operations actually get used and are simply overwritten immediately. The next line in the code is 
+    <code>our_loop:</code> is not an actual instruction that gets executed but an instruction for your assembler which allows you
+    to define 
+    <b>labels</b>. These are markings in the code which are essential to control the flow of execution by providing named locations
+    to which you can jump to. 
+    <code>add ecx, eax</code> is the x86 ASM equivalent of 
+    <code>ecx += eax;</code> and it sets the flags again but they are unused - again. 
+    <code>inc eax</code> increments the value of 
+    <code>eax</code> by 1 - it is the equivalent of 
+    <code>eax++;</code>. We could have used 
+    <code>add eax, 1</code> instead and it is pretty much the same but the 
+    <code>inc</code> instruction is smaller so it is preferable. It does not affect the carry flag but it does not make any
+    difference in this case. 
+    <code>cmp eax, ebx</code> is short for &quot;compare&quot; and it performs the subtraction 
+    <code>eax - ebx</code> 
+    <b>but the result is not stored anywhere</b>. Instead it simply sets the flags we just talked about according to the result.
+    This is an essential way to check whether two registers have equal values, for example. In case they are equal the result of
+    the subtraction is zero so the Zero Flag gets set and we can act accordingly. A 
+    <code>cmp</code> is the first part of the x86 ASM equivalent of a C++ 
+    <code>if</code> construct, so to say. The next part is one of the conditional jumps - in this case it is 
+    <code>jle our_loop</code>. 
+    <code>jle</code> is short for &quot;jump if less or equal&quot;. So, what is a jump? It is a method of controlling the flow of
+    execution of your program by basically telling your microprocessor where to resume the execution after the jump. In the case of
+    the x86 32-bit architecture it means modifying the value of 
+    <code>eip</code>. When jumps actually get encoded they just contain numeric offsets which are either relative to the position
+    of the jump (&quot;jump 25 backward&quot;) or even absolute (&quot;go to the instruction at offset 0x12345678&quot;). There are
+    
+    <b>unconditional jumps</b> which are executed no matter what and 
+    <b>conditional jumps</b> which only perform jumps under certain conditions. If a conditional jump is not taken the execution
+    simply continues with the next instruction after the jump as usual. 
+    <code>our_loop</code> refers to the label we previously defined so if the jump gets executed the next instruction will be 
+    <code>add ecx, eax</code>. So in this case we are dealing with a jump which is executed if the flags indicate that the result
+    is &quot;less or equal&quot;. What is this supposed to mean?! Less than or equal to what? The 
+    <code>cmp</code> operation is usually always used in combination with a conditional jump. Together they are the x86 ASM
+    equivalent of the C++ 
+    <code>if</code> construct. So what the &quot;less or equal&quot; part relates to is the 
+    <code>cmp</code> executed prior to the conditional jump. Read 
+    <code>cmp eax, ebx</code> in combination with 
+    <code>jle our_loop</code> as 
+    <code>if(eax &lt;= ebx) goto our_loop;</code> - resume execution at label 
+    <code>our_loop</code> if 
+    <code>eax</code> is less than or equal to 
+    <code>ebx</code>. There are actually 32 different mnemonics for such jumps:</p>
+    <table class="mnemonicTable">
+      <tr>
+        <th>Mnemonic</th>
+        <th>Meaning</th>
+      </tr>
+      <tr>
+        <td>
+          <code>ja</code>
+        </td>
+        <td>Jump if above (CF=0 and ZF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jae</code>
+        </td>
+        <td>Jump if above or equal (CF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jb</code>
+        </td>
+        <td>Jump if below (CF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jbe</code>
+        </td>
+        <td>Jump if below or equal (CF=1 or ZF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jc</code>
+        </td>
+        <td>Jump if carry (CF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>je</code>
+        </td>
+        <td>Jump if equal (ZF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jz</code>
+        </td>
+        <td>Jump if 0 (ZF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jg</code>
+        </td>
+        <td>Jump if greater (ZF=0 and SF=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jge</code>
+        </td>
+        <td>Jump if greater or equal (SF=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jl</code>
+        </td>
+        <td>Jump if less (SF!=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jle</code>
+        </td>
+        <td>Jump if less or equal (ZF=1 or SF!=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jne</code>
+        </td>
+        <td>Jump if not above (CF=1 or ZF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jna</code>
+        </td>
+        <td>Jump if not above (CF=1 or ZF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnae</code>
+        </td>
+        <td>Jump if not above or equal (CF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnb</code>
+        </td>
+        <td>Jump if not below (CF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnbe</code>
+        </td>
+        <td>Jump if not below or equal (CF=0 and ZF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnc</code>
+        </td>
+        <td>Jump if not carry (CF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jne</code>
+        </td>
+        <td>Jump if not equal (ZF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jng</code>
+        </td>
+        <td>Jump if not greater (ZF=1 or SF!=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnge</code>
+        </td>
+        <td>Jump if not greater or equal (SF!=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnl</code>
+        </td>
+        <td>Jump if not less (SF=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnle</code>
+        </td>
+        <td>Jump if not less or equal (ZF=0 and SF=OF).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jno</code>
+        </td>
+        <td>Jump if not overflow (OF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnp</code>
+        </td>
+        <td>Jump if not parity (PF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jns</code>
+        </td>
+        <td>Jump if not sign (SF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jnz</code>
+        </td>
+        <td>Jump if not zero (ZF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jo</code>
+        </td>
+        <td>Jump if overflow (OF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jp</code>
+        </td>
+        <td>Jump if parity (PF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jpe</code>
+        </td>
+        <td>Jump if parity even (PF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jpo</code>
+        </td>
+        <td>Jump if parity odd (PF=0).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>js</code>
+        </td>
+        <td>Jump if sign (SF=1).</td>
+      </tr>
+      <tr>
+        <td>
+          <code>jz</code>
+        </td>
+        <td>Jump if 0 (ZF=1).</td>
+      </tr>
+    </table>
+    <p>As you can see several of these mnemonics basically do the same thing and they are actually encoded the same way in the
+    actual executable files - they just exist to make the jobs for the programmers easier. So let&#39;s translate this assembly
+    code to C++ so we can see what it does:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+int  eax, ebx, ecx;
+
+//... 
+  
+
+//mov eax, 1 
+  
+eax =1 ;
+
+//mov ebx, 10 
+  
+ebx =10 ;
+
+//xor ecx, ecx 
+  
+ecx =0 ;
+
+our_loop :
+
+//add ecx, eax 
+  
+ecx += eax;
+
+//inc eax 
+  
+eax++;
+
+//cmp eax, ebx 
+  
+//jle our_loop 
+  
+
+if (eax &lt;= ebx)
+goto  our_loop;
+    </pre></code>
+    <p>As you can see there is some kind of iteration going on. 
+    <code>eax</code> is the iterator which is involved in the decision when to leave the loop, 
+    <code>ebx</code> contains the limit for the iterator and 
+    <code>ecx += eax</code> is the actual body of the loop. So we can further simplify the program to:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+int  sum = 0 ;
+for (int i = 1; i &lt;=10; i++)
+    sum += i;
+    </pre></code>
+    <p>Nice, now that is actually really short and easy to comprehend C/C++ code. So it actually calculates the sum 1 + 2 + ... + 9
+    + 10 = 55. Currently the upper limit is 10 - what do we do if want to set this limit to an arbitrary number? In a high level
+    language we would write a new function for this purpose which takes the limit for the loop as its sole argument and which
+    returns an integer, something along the lines of:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+int  calculate_sum(int  limit)
+{
+int  sum = 0 ;
+for (int  i = 1; i &lt;= limit; i++)
+        sum += i;
+return  sum;
+}
+    </pre></code>
+    <p>So, how do we translate this back to x86 ASM? There is a direct equivalent for functions, too. Let us check out what it
+    looks like when we translate this function to assembly language and call the function with a larger limit 20:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+calculate_sum :
+mov eax ,1 
+mov ebx , [esp  +4 ]
+xor ecx ,ecx 
+sum_loop :
+add ecx ,eax 
+inc eax 
+cmp eax ,ebx 
+jle sum_loop 
+mov eax ,ecx 
+ret 4 
+
+start :
+push 20 
+call calculate_sum
+    </pre></code>
+    <p>The first change you can see is the 
+    <code>calculate_sum</code> label that has been added. It is necessary so we have marker in the code which we can use to call
+    the function. The next change is the 
+    <code>mov ebx, [esp + 4]</code> part. The brackets mean that we perform a 
+    <b>memory access</b> (RAM). It is the x86 ASM equivalent of the C/C++ 
+    <code>*</code> operator to dereference pointers. So in this case the pointer is 
+    <code>esp + 4</code>. The x86 architecture supports statements of the form 
+    <code>register + constant_offset</code> for this purpose. So in this case the address 
+    <code>esp + 4</code> is calculated and dereferenced. But how many bytes are read and stored in 
+    <code>ebx</code>? The register is 32-bits in size so 4 bytes are read, beginning at the address 
+    <code>esp + 4</code>, so the bytes 
+    <code>esp + 4</code>, 
+    <code>esp + 5</code>, 
+    <code>esp + 6</code>, 
+    <code>esp + 7</code> are stored in 
+    <code>ebx</code> - but in what order? Which byte goes where? The x86 architecture uses the so called 
+    <b>Little Endian</b> byte order in memory. In this order the least significant byte is stored first in memory:</p>
+    <table class="bitAddition">
+      <tr>
+        <th>Binary value</th>
+      </tr>
+      <tr>
+        <td>
+          <span class="monospace"><span class="red">1</span>001001100010000110000000111001<span class="green">0</span></span>
+        </td>
+      </tr>
+    </table>
+    <p>In this case the red bit is the 
+    <b>most significant bit</b> and the green bit is the 
+    <b>least significant bit</b>. Significance means how much of a difference the bit can make to the value of the integer. The
+    most significant bit has a value of \(2^{31}\) whereas the least significant bit only makes a difference of \(2^0 = 1\). We do
+    not have to worry about as long as we stick to writing values of size \(n \in \mathbb{N}\) to memory and reading \(n\) bytes
+    later. When we read bytes from memory with an instruction like 
+    <code>mov ebx, [esi]</code> the x86 microprocessor reads 4 bytes in Little Endian order, of course. The only time we have to
+    worry about it is we have an integer of \(n &gt; 1\) bytes in memory and we want to access \(m\) particular bytes of it with
+    \(m \in \mathbb{N} \land 1 \le m &lt; n\). In that case we have to know what Endianess the underlying system uses so we read
+    the right bytes. The opposite of Little Endian byte order is 
+    <code>Big Endian</code>. In Big Endian byte order the most significant byte is stored first - just like we do in normal
+    hexadecimal and decimal notation. We write down the number 931 to express \(9 \cdot 100 + 3 \cdot 10 + 1 \cdot 1\). If we
+    applied the Little Endian philosophy to this we would write 139 instead of 931, so to say. Let us have a look at a few examples
+    of how bytes are stored in memory with different 
+    <b>&quot;Endianesses&quot;</b>:</p>
+    <table class="bitAddition">
+      <tr>
+        <th>Hexadecimal notation</th>
+        <th>Consecutive bytes in memory with Little Endian byte order</th>
+        <th>Consecutive bytes in memory with Big Endian byte order</th>
+      </tr>
+      <tr>
+        <td>
+          <code>0xFF</code>
+        </td>
+        <td>
+          <code>0xFF</code>
+        </td>
+        <td>
+          <code>0xFF</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>0x1234</code>
+        </td>
+        <td>
+          <code>0x34, 0x12</code>
+        </td>
+        <td>
+          <code>0x12, 0x34</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>0x09451143</code>
+        </td>
+        <td>
+          <code>0x43, 0x11, 0x45, 0x09</code>
+        </td>
+        <td>
+          <code>0x09, 0x45, 0x11, 0x43</code>
+        </td>
+      </tr>
+    </table>
+    <p>So for single bytes it does not make any difference but as soon as you deal with integers which require two or more bytes
+    the Endianess becomes an issue. Big Endian byte order is much more intuitive as you can see, since it matches the way we
+    usually write numbers so it is easier for humans to read when looking at hex dumps and stuff like that. With Little Endian byte
+    order you would have to reverse it first in order to parse it in the way you usually do. Unluckily the x86 architecture uses
+    the Little Endian byte order so there is not much we can do about it. Even the internet is based on the Big Endian byte order -
+    all the official protocols such as IP, TCP and UDP use it. This is why it is also called 
+    <b>Network Byte Order</b>. When you send multi byte integer values in the headers of the official protocols using a Little
+    Endian byte order all the bytes must be reversed in order first in order to satisfy the specifications - what a bummer! Now
+    that we have cleared this up we should get back to the statement we were originally discussing, 
+    <code>mov ebx, [esp + 4]</code>. So there is a new register in that statement: 
+    <code>esp</code>. Its name is short for extended 
+    <b>stack pointer</b> which is actually a 32-bit &quot;general purpose register&quot; just like the other 7 ones that we listed
+    above. But messing with it can have disastrous results and there is not really a point to use it for any other purpose in
+    normal code, really. The 
+    <b>stack</b> is a part of the memory your application uses. The C++ analogy to this mechanism is 
+    <code>std::stack</code> (which I hope you are familiar with) and in Java it would be 
+    <code>java.util.Stack</code>. A stack is one of the basic container/data structure types which (in theory) only allows you to
+    access the element at the top of the stack by &quot;popping&quot; it off and it allows you to add new elements to the stack by
+    &quot;pushing&quot; them on the top. In terms of microprocessors it is a bit different because you usually access several
+    elements inside the stack which are not at the top because it is more efficient. Let us have a look at a few examples of
+    operations on an abstract stack of integers. This is what our stack looks like at the beginning: (do not be confused by the
+    &quot;Bottom of the stack&quot; part, the bottom does not serve a special purpose and it is just marked to clarify things)</p>
+    <table class="function">
+      <tr>
+        <th>Description</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Top of the stack</td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>17</td>
+      </tr>
+      <tr>
+        <td>Bottom of the stack</td>
+        <td>2</td>
+      </tr>
+    </table>
+    <p>We are going to execute a series of operations on this stack now to observe the changes. First we will push an 8 onto the
+    top. The C++ pseudo code equivalent for this action shall be: 
+    <code>push(8);</code></p>
+    <table class="function">
+      <tr>
+        <th>Description</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Top of the stack</td>
+        <td>8</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>17</td>
+      </tr>
+      <tr>
+        <td>Bottom of the stack</td>
+        <td>2</td>
+      </tr>
+    </table>
+    <p>As you can see the 4 is no longer the top of the stack and we value we just pushed onto the stack is now at the top. Next
+    pseudocode to execute: 
+    <code>int a = pop(); int b = pop();</code></p>
+    <table class="function">
+      <tr>
+        <th>Description</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Top of the stack</td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>17</td>
+      </tr>
+      <tr>
+        <td>Bottom of the stack</td>
+        <td>2</td>
+      </tr>
+    </table>
+    <table class="function">
+      <tr>
+        <th>Description</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>Top of the stack</td>
+        <td>17</td>
+      </tr>
+      <tr>
+        <td>Bottom of the stack</td>
+        <td>2</td>
+      </tr>
+    </table>
+    <p>The pseudo function 
+    <code>pop()</code> pops one value off the stack and returns its value. So the two variables we used in the pseudocode we just
+    executed now have the values 
+    <code>a == 8</code> and 
+    <code>b == 4</code>. So what is the point of this whole stack? What does it get used for in the x86 architecture and other
+    microprocessor architectures? It is an essential data structure which is used to:</p>
+    <ul>
+      <li>Pass arguments to functions</li>
+      <li>Store return addresses</li>
+      <li>Allocate local variables which are too large for the registers</li>
+    </ul>
+    <p>We will get back to what a return address is and how we allocate space for local variables later. At first I would like to
+    discuss the necessity of the stack to pass arguments to functions. You might wonder: &quot;Why do you not simply pass the
+    arguments inside registers?&quot; There actually is a special type of calling convention for functions which does use this
+    mechanism and it is known as 
+    <code>fastcall</code> - because it is extremely fast since it uses registers only for the arguments. This, too, is not yet the
+    point to discuss calling conventions, though. The problem with having all your arguments in registers is that you have a very
+    limited amount of registers but a large amount of functions which call each other in complicated nested ways so you will
+    eventually run out of registers to use in one way or the other. Recursive function calls of arbitrary call depth without
+    storing the arguments somewhere in memory is physically not possible. This is why we pass most arguments on the stack. We push
+    the arguments on the &quot;top&quot;, call our function and remove them after that. The x86 architecture stores the current
+    pointer to the top of the stack, the stack pointer, in the 
+    <code>esp</code> register. So 
+    <code>mov eax, [esp]</code> performs a memory access and copies the value of the top element of the stack into the 
+    <code>eax</code> register. We are dealing with a 32-bit architecture so all elements on the stack are of the same size which is
+    4 bytes. This is why 
+    <code>esp</code> will usually have a value which is a multiple of 4. You might expect that 
+    <code>mov eax, [esp - 4]</code> might access the element right &quot;below&quot; the top one - but that is not so. On the x86
+    architecture the next element below the top is actually stored at 
+    <code>esp + 4</code> so we have to use 
+    <code>mov eax, [esp + 4]</code> to copy its value to 
+    <code>eax</code>. The third element would be at 
+    <code>esp + 8</code>, the fourth at 
+    <code>esp + 12</code> and so on. I am not entirely sure why they picked this somewhat counter-intuitive order for the stack -
+    probably because they thought that addition is more comfortable to deal with to access arguments. The x86 instruction to push a
+    new argument on top of the stack is 
+    <code>push</code>. It takes one argument which can be a register or an immediate value, for example. An 
+    <b>immediate value</b> is any constant value like 
+    <code>2</code> or 
+    <code>0x00ff1234</code> which is directly encoded into the instruction. So what 
+    <code>push eax</code> does is:</p>
+    <ol>
+      <li>
+      <code>sub esp, 4</code> (decrease the stack pointer by the word size of the microprocessor to make space for the new top
+      element)</li>
+      <li>
+      <code>mov [esp], eax</code> (write the value of 
+      <code>eax</code> to the memory at the address contained in 
+      <code>esp</code> - the top of the stack is now equal to 
+      <code>eax</code>)</li>
+    </ol>
+    <p>You can basically replace 
+    <code>push</code> with those two instructions all the time but x86 is a CISC architecture so we save space by using 
+    <code>push</code> instead. 
+    <code>sub</code> is short for subtract and as you might have guessed already, it performs a subtraction like 
+    <code>add</code> performs an addition. The arguments are intuitive, 
+    <code>sub register1, register2</code> is equivalent to the C++ code 
+    <code>register1 -= register;</code> or 
+    <code>register1 = register1 - register2;</code>. The x86 instruction to pop an element off the stack is called 
+    <code>pop</code>. Like 
+    <code>push</code>, it takes one argument, too. Usually it is a register so let us check out what 
+    <code>pop ebx</code> does:</p>
+    <ol>
+      <li>
+      <code>mov ebx, [esp]</code> (read 4 bytes from the memory at the address specified by the register 
+      <code>esp</code> and store them in 
+      <code>ebx</code>)</li>
+      <li>
+      <code>add esp, 4</code> (add 4 to the stack pointer so it makes the element &quot;below&quot; the top one the new top element
+      of the stack)</li>
+    </ol>
+    <p>So, to get back to the piece of x86 ASM we were previously discussing: What 
+    <code>mov ebx, [esp + 4]</code> really does is copying the first argument passed to the function into the 
+    <code>ebx</code> register. The first argument is the second element of the stack, the second argument is the third and so on.
+    So what does the top of the stack contain? What is stored at 
+    <code>[esp]</code>? This is the so called 
+    <b>return address</b> which is necessary for a function to know where it was originally called from so 
+    <code>eip</code>, the instruction pointer, can be set to the right value after the function returns. We want our program to
+    resume execution with the instruction after our call, after all.</p>
+    <p>The 
+    <code>start</code> label is not really relevant for the understanding of the principle but I simply wanted to point out where
+    the execution actually started in case somebody got confused by the stream of x86 ASM instructions. The assembly code 
+    <code>push 20</code>, 
+    <code>call calculate_sum</code> first pushes the immediate value 20 on top of the stack and then calls the function. Remember
+    that we only see this label in our assembly language code. It does not exist is such in the actual binary file. In the
+    executable file you will simply see the call with an address after it. This address points to the first instruction of the
+    function we marked with the label 
+    <code>calculate_sum</code>. In this case it is the instruction 
+    <code>mov eax, 1</code>. This is what 
+    <code>call address</code> actually does:</p>
+    <ol>
+      <li>
+      <code>esp -= 4;</code> (make space for the return address on the stack)</li>
+      <li>
+      <code>*esp = address_of_next_instruction;</code> (stores the address of the instruction 
+      <b>after</b> the call on the stack)</li>
+      <li>
+      <code>eip = address;</code> (modify the instruction pointer so it resumes execution in the body of the function)</li>
+    </ol>
+    <p>As you can see I did not use x86 ASM instructions to describe what this function does. Instead, I resorted to the C++ pseudo
+    code I use occasionally. This is because we cannot modify 
+    <code>eip</code> like a normal register. It takes a jump or a call (which is similar to a jump) to achieve that. What the
+    combination of 
+    <code>push 20</code> and 
+    <code>call calculate_sum</code> really translates to in C++ is 
+    <code>calculate_sum(20);</code>. The function 
+    <code>calculate_sum</code> is called with the argument 20 - which is what we originally wanted. You will see the push/call
+    construct quite frequently. usually functions have even more than one argument so you will see multiple pushes prior to a call.
+    Perhaps you have noticed that another element has been added to the function. The 
+    <code>ret</code> instruction is used to 
+    <b>return</b> from a function after it has been called. Additionally it can take an argument which in the case of 
+    <code>ret 4</code> is equal to 4. Let us have a look at what this 
+    <code>ret argument</code> instruction does:</p>
+    <ol>
+      <li>
+      <code>eip = *esp</code> (copy the instruction pointer from the stack back to the instruction pointer to resume execution at
+      the instruction after the call)</li>
+      <li>
+      <code>esp += 4 + argument;</code> (remove the return address from the stack and, if necessary, arguments that were pushed
+      onto the stack for the function)</li>
+    </ol>
+    <p>If a function takes \(n \in \mathbb{N}\) arguments you will usually return from it with the instruction \(\mbox{ ret } 4
+    \cdot n\). If the function is nullary (if it takes no arguments), you can simply use 
+    <code>ret</code> instead of 
+    <code>ret 0</code>. You also might have noticed the additional 
+    <code>mov eax, ecx</code> I inserted prior to the 
+    <code>ret 4</code>. I did this because it is a common calling convention to return the result of a function in the 
+    <code>eax</code> register which is the first of the 8 (or rather 7 without 
+    <code>esp</code>) general purpose registers. Of course you do not have to do this but if you interface with C/C++ code you will
+    have to know this of course. Now that we have covered the basics of calling and returning we can move on to the topic of
+    calling conventions. You might remember me talking about the 
+    <code>fastcall</code> convention - it is one of them. If you are an experienced C/C++ programmer you should already be familiar
+    with a few of them. They differ in the following regards:</p>
+    <ol>
+      <li>How do arguments get passed? On the stack? In registers?</li>
+      <li>In what order are arguments passed?</li>
+      <li>Who is responsible for fixing the stack after the function has processed the arguments?</li>
+      <li>What registers must be preserved by the function?</li>
+    </ol>
+    <p>Let us take a look at the most common calling conventions:</p>
+    <table class="function">
+      <tr>
+        <th>Calling convention</th>
+        <th>Where are the arguments stored?</th>
+        <th>In what order are the arguments passed</th>
+        <th>Who is responsible for cleaning up the stack?</th>
+        <th>Registers that have to be preserved</th>
+      </tr>
+      <tr>
+        <td>cdecl (C declaration)</td>
+        <td>Stack</td>
+        <td>Right to left</td>
+        <td>Calling function</td>
+        <td>
+          <code>ebx edi esi ebp</code>
+        </td>
+      </tr>
+      <tr>
+        <td>stdcall (standard call)</td>
+        <td>Stack</td>
+        <td>Right to left</td>
+        <td>Called function</td>
+        <td>
+          <code>ebx edi esi ebp</code>
+        </td>
+      </tr>
+      <tr>
+        <td>fastcall (fast call)</td>
+        <td>Registers and stack</td>
+        <td>1. 
+        <code>ecx</code> 2. 
+        <code>edx</code> 3. and further: stack from right to left</td>
+        <td>Called function</td>
+        <td>
+          <code>ebx edi esi ebp</code>
+        </td>
+      </tr>
+    </table>
+    <p>You will find the 
+    <code>cdecl</code> calling convention in pretty much all C based interfaces, especially obviously in the world of UNIX-like
+    operating systems. Windows uses the 
+    <code>stdcall</code> convention for most of its API. 
+    <b>Right to left</b> means that the rightmost argument in conventional notation is pushed first in the assembly code. The order
+    does obviously not make any difference if there is only a single argument as in the code we were discussing. If the calling
+    function is responsible for fixing the stack - that is, getting rid of the arguments below the return address which were passed
+    to the function - it simply does what our code does: it uses the 
+    <code>ret</code> instruction with the right argument to clean up the stack. If the calling function is responsible for cleaning
+    up the stack, the function in question usually simply calls 
+    <code>ret</code> and leaves all the work for whoever called him. Let us clarify by example:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code  class="cpp hljs">
+void  __cdecl test1(int  a,int  b,int  c)
+{
+}
+
+void  __stdcall test2(int  a,int  b,int  c)
+{
+}
+
+test1(1 ,2 ,3 );
+
+test2(1 ,2 ,3 );
+    </pre></code>
+    <p>This C++ code would look something like this in x86 ASM:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+test1 :
+ret 
+
+test2 :
+ret 12 
+
+start :
+push 3 
+push 2 
+push 1 
+call test1 
+add esp ,12 
+
+push 3 
+push 2 
+push 1 
+call test2
+    </pre></code>
+    <p>So the differences between these two function calls are:</p>
+    <table class="function">
+      <tr>
+        <th>Calling convention</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>cdecl (C declaration)</td>
+        <td>Uses 
+        <code>ret</code> to return and forces the calling function to 
+        <code>add esp, 12</code> to fix the stack.</td>
+      </tr>
+      <tr>
+        <td>stdcall (standard call)</td>
+        <td>Uses 
+        <code>ret 12</code> to return so the calling function does not have to fix the stack.</td>
+      </tr>
+    </table>
+    <p>
+    <code>stdcall</code> is more efficient than 
+    <code>cdecl</code> because it requires one instruction less to execute. Do not be fooled by the number of instructions - there
+    are tons of examples in which code which uses more instructions to solve the same problem is actually faster but in this case
+    it happens to be intuitively right because all these simple instructions get executed at about the same speed. However, it is
+    not yet the time to talk optimisations in general so let us return to the matter at hand. Now that we have covered some of the
+    fundamentals of x86 assembly programming we can finally start writing simple programs that actually interact with the API of
+    the underlying OS. We are going to implement the same basic command line program on different operating systems using various
+    assembler programs in the next section of this document. This program will simply be an extension of what we have already
+    written.</p>
+    <h1 id="WritingWindowsApplicationsUsingx8632bitAssembly">Writing Windows Applications Using x86 32-bit Assembly</h1>
+    <p>At first we are going to take a look at how to write assembly for the popular Windows operating system. We are going to
+    check out the Microsoft (R) Macro Assembler Version 9.00.21022.08 (short 
+    <b>MASM</b>), the great open source program flat assembler 1.67.27 for Windows (short 
+    <b>FASM</b>) and the netwide assembler 2.04 RC 1 (short 
+    <b>NASM</b>).</p>
+    <h2 id="MASM">MASM</h2>
+    <p>This is the most used assembler for writing assembly code for the Microsoft Windows operating systems. Before I am going to
+    just throw the code right into your face I would like to dedicate a few words to what is known as 
+    <b>MASM32</b> - a great source of confusion and frustration.</p>
+    <p>MASM32 (from movsd.com/masm32.com) does not have anything to do with Microsoft or MASM as such. It is a package mostly made
+    by an Australian known as Steve Hutchesson (aka hutch). This package contains lots of headers and example code and it uses the
+    Microsoft ml/link binaries version 6.x from 1998 or so. It is absolutely useless for any modern x86 32-bit Windows assembly
+    programming. Never make the mistake of mixing up MASM and MASM32. I see a lot of people making this mistake. I have even seen
+    people give up on MASM because they thought that MASM32 was it. It is really sickening. As for the actual package itself, the
+    example code may be useful for new ASM programmers but you should stay away from the MASM32 &quot;library&quot; and the
+    outdated headers which give you parsing errors in new versions of MASM.</p>
+    <p>Let us get back to the actual code. We will go through it line by line:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+;Arithmetic sum program 
+  
+.686p 
+  
+.model flat ,stdcall 
+
+option epilogue :none 
+option prologue :none 
+
+GetStdHandle proto  :dword 
+wsprintfA protoc  :vararg 
+WriteConsoleA proto  :dword , :dword , :dword , :dword , :dword 
+ExitProcess proto  :dword 
+
+STD_OUTPUT_HANDLE equ -11 
+
+.data 
+  
+
+sum_string db &quot;Arithmetic sum for the limit %d is %d&quot; ,10 ,0 
+
+.data? 
+  
+
+buffer db 64dup (? )
+bytes_written dd ? 
+
+.code 
+  
+
+calculate_sum proc limit :dword 
+xor esi ,esi 
+mov edi ,1 
+jmp loop_start 
+    sum_loop :
+add esi ,edi 
+inc edi 
+    loop_start :
+cmp edi , [esp  +4 ]
+jle sum_loop 
+ret 
+calculate_sum endp 
+
+public main 
+
+main proc 
+invoke GetStdHandle ,STD_OUTPUT_HANDLE 
+mov ebp ,eax 
+xor ebx ,ebx 
+main_loop :
+invoke calculate_sum ,ebx 
+invoke wsprintfA ,addr buffer ,addr sum_string ,ebx ,esi 
+invoke WriteConsoleA ,ebp ,addr buffer ,eax ,addr bytes_written ,0 
+inc ebx 
+cmp ebx ,20 
+jle main_loop 
+invoke ExitProcess ,0 
+main endp 
+
+end
+    </pre></code>
+    <p>
+    <code>;Arithmetic sum program</code> is a comment. In MASM comments are made using the semicolon character. There are only
+    single line comments so it is pretty much the equivalent of the C/C++ 
+    <code>//</code>. Unluckily there is no multi line comment feature. 
+    <code>.686p</code> specifies what instructions are allowed to be used in the assembly code. There are numerous other ones but
+    this is a nobrainer really. 
+    <code>.686p</code> is simply the most &quot;modern&quot; one. 
+    <code>.model flat, stdcall</code> specifies two things. For one it specifies the memory model to be used. The 
+    <code>flat</code> memory model is the only one supported by modern Windows operating systems so it is hardly worth discussing.
+    The 
+    <code>stdcall</code> part specifies the default calling convention. Since we are dealing with Windows API code we definitely
+    should use 
+    <code>stdcall</code>. 
+    <code>option epilogue: none</code> and 
+    <code>option prologue: none</code> tells the assembler that we do not want to use the default MASM epilogues/prologues. These
+    are instructions that are automatically appended at the front of your function and whereever you call 
+    <code>ret</code>. It is a nice feature to support but it is very annoying that it actually puts some instructions there you do
+    not see in your code - instructions you never expected to be there until you run your binary in a debugger to find out that
+    some strange feature is totally breaking your assembly! In the case of MASM the default code is establishing a so called 
+    <b>frame stack</b>. This is mostly a nasty relic of the past which is still used by unenlightened copycats who never bother to
+    actually check whether such features actually make sense or not. I am just going to demonstrate this dumb practice to you
+    once:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+ ;non-sensical function 
+   
+ some_function proc 
+ xor eax ,eax 
+ jmp return 
+ ret 
+ return :
+ mov eax ,1 
+ ret
+    </pre></code>
+    <p>This function does not perform any meaningful task, it is merely an example. With the default epilogue/prologue code this
+    will assemble to:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+push ebp 
+mov ebp ,esp 
+xor eax ,eax 
+jmp some_constant;I do not know the immediate value that will be used here so I just made up some
+  name. 
+pop ebp 
+ret 
+  
+mov eax ,1 
+pop ebp 
+ret
+    </pre></code>
+    <p>So as you can see every 
+    <code>proc</code> (a fancy way of declaring a function, short for &quot;procedure&quot;) will generate an additional 
+    <code>push ebp</code>, 
+    <code>mov ebp, esp</code> and an additional 
+    <code>pop ebp</code> prior to every single 
+    <code>ret</code>. So at first the value of 
+    <code>ebp</code> is supposed to get preserved by being copied to the stack. Then 
+    <code>esp</code> is copied to 
+    <code>ebp</code>. In the end the original value of 
+    <code>ebp</code> gets restored by 
+    <code>pop ebp</code>. So, what is the point of all this? When you manipulate 
+    <code>esp</code> in your function body you will have to watch what offset your original arguments which were passed to your
+    function are at. The idea of the stack frame is to preserve the original value so you do not have to do any thinking to come up
+    with the offset. The truth is that 
+    <b>stack frames are useless unless you are performing operations which do not let you predict the argument offset at assembly
+    time</b>. It is a waste of instructions. All you usually achieve is being able to write stuff like 
+    <code>mov eax, [ebp + 4]</code> instead of 
+    <code>mov eax, [esp + 4]</code> which is really idiotic in general. So 
+    <b>do not use this feature</b>. Now that we have cleared this up, let us get back to the code at hand.</p>
+    <p>
+    <code>GetStdHandle proto :dword</code> declares the prototype ( 
+    <code>proto</code>) of a function called 
+    <code>GetStdHandle</code> which uses the default calling convention we specified. We specified 
+    <code>stdcall</code> in the 
+    <code>.model</code> directive. We could even have used 
+    <code>GetStdHandle proto stdcall :dword</code> to be even more explicit about it but it is unnecessary in this case since we
+    already specified a default calling convention. If you do not know what a particular function does you should definitely look
+    it up on MSDN. You might even know some of these Windows API calls but you are probably surprised by these -A prefixes some of
+    these have. The Windows API uses the -A prefix for &quot;ASCII&quot; and the -W prefix for &quot;Wide chars&quot; - Unicode.
+    They are redirected according to the preprocessor definitions in the C interface. The -A variants usually simply call the -W
+    ones after a few string conversions. Windows handles most strings internally as Unicode. It is more convenient to use ASCII in
+    this case, though, so we use the -A interfaces. On the next few lines a few more prototypes are declared and the majority of
+    them are just like this one but the the 
+    <code>wsprintfA</code> one stands out because of the 
+    <code>vararg</code> part. This nasty function takes a variable amount of arguments and it is up to us to fix them later. It
+    uses the C calling convention, hence the 
+    <code>c</code> part. These prototypes basically work like the function declarations in C/C++. We definitely need to use them
+    for external calls so we need to declare them as prototypes using the 
+    <code>proto</code> directive first before we can use them. 
+    <code>STD_OUTPUT_HANDLE equ -11</code> is a directive which will replace all future occurences of the name 
+    <code>STD_OUTPUT_HANDLE</code> with the constant -11. We need this one for 
+    <code>GetStdHandle</code>. The 
+    <code>.data</code> directive declares the start of the data section. This is where we store static data/global variables, so to
+    say. 
+    <code>sum_string db &quot;Arithmetic sum for the limit %d is %d&quot;, 10, 0</code> declares a zero terminated string
+    &quot;Arithmetic sum for the limit %d is %d\n&amp;ququot; by the name of 
+    <code>format_string</code>. 
+    <code>db</code> is short for &quot;declare byte(s)&quot;, I believe. Consecutive bytes can simply be declared using the comma
+    notation you can see in those lines. The 
+    <code>.data?</code> directive introduces the uninitialised data section. We store static variables which have no predefined
+    value in this part of the program. 
+    <code>buffer db 64 dup (?)</code> declares a range of 64 bytes which have no defined value as specified in the parenthesis ( 
+    <code>?</code>). 
+    <code>dup</code> is short for &quot;duplicate&quot;, or so, I believe. 
+    <code>bytes_written dd ?</code> uses the 
+    <code>dd</code> directive which is short for &quot;declare DWORD&quot; which has no predefined value. At this point I should
+    probably explain the Microsoft/Intel terms for different byte counts:</p>
+    <table class="function">
+      <tr>
+        <th>Term</th>
+        <th>Full name</th>
+        <th>Size in bytes</th>
+      </tr>
+      <tr>
+        <td>
+          <code>BYTE</code>
+        </td>
+        <td>Byte</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>
+          <code>WORD</code>
+        </td>
+        <td>Word</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td>
+          <code>DWORD</code>
+        </td>
+        <td>Double word</td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td>
+          <code>QWORD</code>
+        </td>
+        <td>Quad word</td>
+        <td>8</td>
+      </tr>
+    </table>
+    <p>Actually, &quot;word&quot; usually refers to whatever the normal size of the general purpose registers of a microprocessor
+    may be which in the case of the x86 32-bit architecture happens to be 4 bytes. Intel and Microsoft somewhat hijacked these
+    terms so you have to be careful not to mix this stuff up. 
+    <code>.code</code> represents the begining of the code section where all the instructions are stored. 
+    <code>calculate_sum proc limit:dword</code> declares the beginning of a function (procedure) by the name of 
+    <code>calculate_sum</code> which takes one argument which happens to go by the name of 
+    <code>limit</code> which is for documentative purpose mostly, though. MASM does support statements like 
+    <code>mov eax, limit</code> but in this case it would translate to 
+    <code>mov eax, [ebp + 4]</code> because this inferior software simply assumes that you use the stupid frame stack thing I
+    previously explained. So just stick to accessing the arguments using 
+    <code>esp</code> directly - it is much more comfortable and efficient on the long run. The ret of the function is actually
+    pretty much the same - except for the 
+    <code>ret</code>. As you can see there no longer is any argument on the return instruction. This is managed by MASM
+    automatically since we specified the number of arguments in the 
+    <code>proc</code> line. 
+    <code>calculate_sum endp</code> declares the end of the procedure. Requiring the programmer to add the name of the function
+    there is really redundant and I have no idea why they coded it this way but we do not have much of a choice if we want to use
+    the 
+    <code>proc</code> feature in MASM. 
+    <code>end</code> is short for &quot;end of procedure&quot; I suppose. 
+    <code>public main</code> makes the label/function 
+    <code>main</code> a public symbol so we can later specify it as the entry point of our program in the linker command line. 
+    <code>main proc</code> declares the beginning of the main procedure. I chose to call it 
+    <code>main</code> because of the meaning of the name in C/C++ but you could pretty much give it any name you want really. The
+    main procedure contains the code that gets executed first. 
+    <code>invoke</code> is not an actual x86 instruction - it is a MASM macro which makes calling functions with one more arguments
+    more comfortable. As you can see it allows you to call functions pretty much as in C/C++. The 
+    <code>addr</code> directive gets the address of a named object inside the data section. 
+    <code>invoke wsprintfA, addr buffer, addr sum_string, ebx, esi</code> calls the user32.dll function 
+    <code>wsprintfA</code> which has a variable number of arguments and uses the C calling convention. We use it to fill the static
+    buffer with the formatted string output with the appropriate values plugged in where the 
+    <code>%d</code> are but you should be familiar with this nasty stuff from C and possibly other high level programming
+    languages. The rest of the program should be fairly obvious with the knowledge you now possess so let us find out how to
+    assemble, link and run this stuff.</p>
+    <p>At first you will need to get your hands on the relevant MASM binaries. mspdb80.dll and link.exe come with Microsoft Visual
+    C++ Express 9 which can be downloaded for free from 
+    <a href="http://www.microsoft.com/express/Downloads/">http://www.microsoft.com/express/Downloads/</a>. I recommend that you get
+    the offline installation instead of the annoying web installer - it simply gives you more control. I do not know where to get
+    the current ml.exe from for free. You can get the 8.0 one at 
+    <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=7a1c9da0-0510-44a2-b042-7ef370530c64&amp;displaylang=en">http://www.microsoft.com/downloads/details.aspx?FamilyID=7a1c9da0-0510-44a2-b042-7ef370530c64&amp;displaylang=en</a>
+    apparently but that&#39;s outdated. If you already own a legal or illegal copy of Microsoft Visual C++ 9 you will not need to
+    download it, obviously. We only care about three files out of the installation anyways. They are:</p>
+    <ul>
+      <li>ml.exe (771 KiB)</li>
+      <li>link.exe (349 KiB)</li>
+      <li>mspdb80.dll (188 KiB)</li>
+    </ul>
+    <p>Ok, actually we can use more of the files - the lib and dll files. Here is the commandline I used to assemble and link this
+    program:</p>
+    <pre><code>
+D:\Code\Assembly\calculate_sum\source&gt;&quot;D:\Code\Assembly\binaries\32\ml.exe&quot;
+  /c /Cx /coff /nologo calculate_sum.asm
+ Assembling: calculate_sum.asm
+
+
+  D:\Code\Assembly\calculate_sum\binary&gt;&quot;D:\Code\Assembly\binaries\32\link.exe&quot; /MACHINE:X86 /NODEFAULTLIB
+  /NOLOGO /ENTRY:main /OUT:calculate_sum.exe /SUBSYSTEM:CONSOLE calculate_sum.obj /LIBPATH:&quot;C:\Program Files
+  (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\Lib&quot; kernel32.lib &quot;C:\Program Files (x86)\Microsoft Visual
+  Studio 9.0\VC\lib\msvcrt.lib&quot;
+    </pre></code>
+    <p>
+    <b>ml.exe</b> is the actual Microsoft Macro Assembler which we use to produce object files. 
+    <b>link.exe</b> is the Microsoft linker which produces the actual binaries from the object files. Let us first quickly go
+    through the arguments of each program. 
+    <code>/c</code> tells it that you want to generate a single object file without having ml produce an .exe directly. 
+    <code>/Cx</code> makes it case sensitive: &quot;Preserve case in publics, externs&quot;. 
+    <code>/coff</code> makes it generate COFF files which is the standard object format Windows uses. 
+    <code>/nologo</code> suppresses the Microsoft copyright message which increases the file size for no particular reason. 
+    <code>calculate_sum.asm</code> is simply the name of the source file in which I stored the assembly code.</p>
+    <p>Mow for the linker arguments. 
+    <code>/MACHINE:X86</code> specifies the x86 machine as target platform. 
+    <code>/NODEFAULTLIB</code> specifies that it must not use default libraries. 
+    <code>/NOLOGO</code> does the same thing as before. 
+    <code>/ENTRY:main</code> specifies the main entry point of the program - this is the place where the execution starts first.
+    This is directly related to the 
+    <code>public main</code> in our assembly code. 
+    <code>/OUT:calculate_sum.exe</code> specifies the output file name which is our binary - 
+    <code>calculate_sum.exe</code>. 
+    <code>/SUBSYSTEM:CONSOLE</code> specifies the subsystem to use. In this case we want a console by default so we&#39;re using
+    the Windows PE Loader Console setting. 
+    <code>calculate_sum.obj</code> is the output from ml.exe. 
+    <code>/LIBPATH:&quot;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\Lib&quot;</code> specifies the default
+    path where link.exe should look for library files to link with. 
+    <code>kernel32.lib</code> is an essential library which we need for the 
+    <code>ExitProcess</code> call. 
+    <code>&quot;C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\lib\msvcrt.lib&quot;</code> links the object file with the
+    Microsoft Visual C runtime. We need this to use all the C library functions we are using. So after executing both lines we
+    should have a working small 2.5 KiB executable which we are going to run now:</p>
+    <pre><code>
+D:\Code\Assembly\calculate_sum\binary&gt;calculate_sum.exe
+Arithmetic sum for the limit 0 is 0
+Arithmetic sum for the limit 1 is 1
+Arithmetic sum for the limit 2 is 3
+Arithmetic sum for the limit 3 is 6
+Arithmetic sum for the limit 4 is 10
+Arithmetic sum for the limit 5 is 15
+Arithmetic sum for the limit 6 is 21
+Arithmetic sum for the limit 7 is 28
+Arithmetic sum for the limit 8 is 36
+Arithmetic sum for the limit 9 is 45
+Arithmetic sum for the limit 10 is 55
+Arithmetic sum for the limit 11 is 66
+Arithmetic sum for the limit 12 is 78
+Arithmetic sum for the limit 13 is 91
+Arithmetic sum for the limit 14 is 105
+Arithmetic sum for the limit 15 is 120
+Arithmetic sum for the limit 16 is 136
+Arithmetic sum for the limit 17 is 153
+Arithmetic sum for the limit 18 is 171
+Arithmetic sum for the limit 19 is 190
+Arithmetic sum for the limit 20 is 210
+
+D:\Code\Assembly\calculate_sum\binary&gt;
+    </pre></code>
+    <h2 id="FASM">FASM</h2>
+    <p>Flat assembler is a great multi platform open source program which you can download at 
+    <a href="http://flatassembler.net/download.php">http://flatassembler.net/download.php</a>. Here is the equivalent code:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+format PE Console 4.0 
+entry start 
+
+include &#39;D:\Downloads\fasmw16727\INCLUDE\win32a.inc&#39; 
+include &#39;D:\Downloads\fasmw16727\INCLUDE\macro\masm.inc&#39; 
+
+option prologue :none 
+option epilogue :none 
+
+section &#39;.data&#39; data readable writeable 
+
+sum_string db &#39;Arithmetic sum for the limit %d is %d&#39; ,10 ,0 
+
+section &#39;.bss&#39; readable writeable 
+
+buffer db 64dup  (? )
+bytes_written dd ? 
+
+section &#39;.code&#39; code readable executable 
+
+proc calculate_sum limit 
+xor esi ,esi 
+mov edi ,1 
+jmp loop_start 
+    sum_loop :
+add esi ,edi 
+inc edi 
+    loop_start :
+cmp edi , [esp  +4 ]
+jle sum_loop 
+ret 4 
+endp 
+
+start :
+invoke GetStdHandle ,STD_OUTPUT_HANDLE 
+mov ebp ,eax 
+xor ebx ,ebx 
+main_loop :
+stdcall calculate_sum ,ebx 
+invoke wsprintfA ,buffer ,sum_string ,ebx ,esi 
+invoke WriteConsoleA ,ebp ,buffer ,eax ,bytes_written ,0 
+inc ebx 
+cmp ebx ,20 
+jle main_loop 
+invoke ExitProcess ,0 
+
+section &#39;.idata&#39; import data readable 
+
+library \
+kernel32 ,&#39;kernel32.dll&#39; ,\
+user32 ,&#39;user32.dll&#39; 
+
+import kernel32 ,\
+GetStdHandle ,&#39;GetStdHandle&#39; ,\
+WriteConsoleA ,&#39;WriteConsoleA&#39; ,\
+ExitProcess ,&#39;ExitProcess&#39; 
+
+import user32 ,\
+wsprintfA ,&#39;wsprintfA&#39;
+    </pre></code>
+    <p>
+    <code>format PE Console 4.0</code> specifies the format of the output file. As you can see from this FASM is both an assembler
+    and a linker. It specifies the portable executable format (PE) which is used by Windows and the console subsystem just like
+    last time. 
+    <code>entry start</code> specifies the entry point - in this case it is the label 
+    <code>start</code>. The 
+    <code>include</code> directive includes another FASM file. In this case I included files from the FASM installation which
+    contain information about the Win32 API and a file which contains macros. We require those macros for the next two lines: 
+    <code>option prologue:none</code>, 
+    <code>option epilogue:none</code> are basically equivalent to the MASM directives. Unluckily FASM, too, uses a stack frame for
+    procs by default - what a shame. So we need to use those directives to get rid of the stuff again. The 
+    <code>section</code> directives declare new sections, their names and their properties. The following lines do not require any
+    special explanations with two exceptions. The 
+    <code>.bss</code> section is used for uninitialised data and it is basically equivalent to MASM&#39;s 
+    <code>.data?</code>. 
+    <code>stdcall calculate_sum, ebx</code> is different, aswell. For some peculiar reason you cannot use the invoke macro in that
+    case and I really have no idea why. It will give you an assembler error if you do. The only difference between between those
+    calls is the fact that the 
+    <code>invoke</code> lines operate on imported functions whereas 
+    <code>calculate_sum</code> was defined by us. Another difference to 
+    <code>MASM</code> is the 
+    <code>section &#39;.idata&#39; import data readable</code> part which actually defines an import section. This part is not
+    visible in MASM as such. We define which functions to import from dynamic Windows libraries (DLL) in this part of the code so
+    we can call and use them. The command line is unspectacular:</p>
+    <pre><code>
+D:\Downloads\fasmw16727&gt;FASM.EXE
+  D:\code\Assembly\calculate_sum_fasm\calculate_sum.asm D:\code\Assembly\calculate_sum_fasm\calculate_sum.exe
+flat assembler  version 1.67.27  (1207647 kilobytes memory)
+3 passes, 2048 bytes.
+
+D:\Downloads\fasmw16727&gt;
+    </pre></code>
+    <p>The output of the executable is the same as before so we do not need to go over it again.</p>
+    <h2 id="NASM">NASM</h2>
+    <p>The netwide assembler is another multi platform open source assembler which I do not have much experience with. Windows
+    include files come in a separate package known as NASMX and unluckily it is outdated and does not work well with the current
+    version of NASM (produces warnings, possibly errors). I tried to use it at first for this small example but eventually I gave
+    up on it and went the hard way. I shall link NASMX here aswell in case it gets updated at some point but I cannot recommend
+    getting it right now except as example code. Go to 
+    <a href="http://nasm.sourceforge.net/">http://nasm.sourceforge.net/</a> to download NASM and 
+    <a href="http://www.asmcommunity.net/projects/nasmx/">http://www.asmcommunity.net/projects/nasmx/</a> to get the outdated
+    NASMX. I am using the Microsoft linker with the NASM object file output in this example but you can use other linkers aswell.
+    The NASMX package comes with a different linker but I will stick with Microsoft&#39;s current linker which comes with Visual
+    Studio 2008. Here is the equivalent code in NASM which is &quot;rawer&quot; than the MASM and FASM one:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+%define STD_OUTPUT_HANDLE -11 
+
+extern _GetStdHandle4 
+extern _WriteConsoleA20 
+extern _wsprintfA 
+extern _ExitProcess4 
+
+global _start 
+
+[section .data ]
+
+format_string db &#39;Arithmetic sum for the limit %d is %d&#39; ,10 ,0 
+
+[section  .bss ]
+
+buffer resb 64 
+bytes_written resd 1 
+
+[section  .text ]
+
+    calculate_sum :
+xor esi ,esi 
+mov edi ,1 
+jmp loop_start 
+    sum_loop :
+add esi ,edi 
+inc edi 
+    loop_start :
+       &amp;nbsnbsp;cmp edi , [esp  +4 ]
+jle sum_loop 
+ret 
+
+_start :
+push STD_OUTPUT_HANDLE 
+call _GetStdHandle4 
+mov ebp ,eax 
+xor ebx ,ebx 
+main_loop :
+push ebx 
+call calculate_sum 
+push esi 
+push ebx 
+push format_string 
+push buffer 
+call _wsprintfA 
+add esp ,16 
+push 0 
+push bytes_written 
+push eax 
+push buffer 
+push ebp 
+call _WriteConsoleA20 
+inc ebx 
+cmp ebx ,20 
+jle main_loop 
+push 0 
+call _ExitProcess4
+    </pre></code>
+    <p>
+    <code>%define STD_OUTPUT_HANDLE -11</code> simply defines the constant 
+    <code>STD_OUTPUT_HANDLE</code> again, just with a more C&#39;ish feeling on it. 
+    <code>extern _GetStdHandle4</code> declares the external symbol 
+    <code>_GetStdHandle4</code> which is the actual name of 
+    <code>GetStdHandle</code> inside the Microsoft library 
+    <code>kernel32.lib</code>. MASM handles those on its own and can use the names as they actually appear in the Windows DLLs. The
+    number behind the 
+    <span class="monospace">] is the size of the arguments in bytes so it is basically the number of arguments times 4 mostly. 
+    <code>global _start</code> declares a symbol which gets exported. We require this in order do define 
+    <code>_start</code> as an entrypoint in the linker settings later on. The underscore prefix is required by the Microsoft linker
+    as you will see later. The section declaration syntax is a bit different as you can see but the names are still the same. 
+    <code>buffer resb 64</code> declares 64 uninitialised bytes in the 
+    <code>.bss</code> section. The 
+    <code>b</code> in 
+    <code>resb</code> stands for byte. 
+    <code>bytes_written resd 1</code> declares a single uninitialised &quot;dword&quot;, a 4 byte integer, hence the 
+    <code>d</code> in 
+    <code>resd</code>. The calls below show that NASM does not come with any fancy 
+    <code>invoke</code> (MASM, FASM) or 
+    <code>stdcall</code> (FASM) macros by default. NASMX has those but I do not use it for aforementioned reasons. So we have to 
+    <code>push</code> all the arguments manually as necessary. The 
+    <code>add esp, 16</code> stack fix is necessary because 
+    <code>wsprintfA</code> uses the C calling convention so it does not clean up after itself. We pushed 4 arguments onto the stack
+    so we have to add \(4 \cdot 4 = 16\) to 
+    <code>esp</code>. Now for the commandline arguments to assemble and link this program:</span></p>
+    <pre><code>
+d:\Downloads\nasm-2.04rc1-win32\nasm-2.04rc1\nasm.exe -f win32
+  D:\code\Assembly\calculate_sum_nasm\calculate_sum.asm -o D:\code\Assembly\calculate_sum_nasm\calculate_sum.obj
+D:\Code\Assembly\binaries\32\link.exe /MACHINE:X86 /NODEFAULTLIB /NOLOGO
+  /ENTRY:start /OUT:calculate_sum.exe /SUBSYSTEM:CONSOLE d:\Code\Assembly\calculate_sum_nasm\calculate_sum.obj
+  /LIBPATH:&quot;C:\Program Files (x86)\Microsoft Visual Studio 8\VC\PlatformSDK\Lib&quot; kernel32.lib user32.lib
+    </pre></code>
+    <p>This does not require much explanation really since it is the same stuff all over again. One notable thing is the 
+    <code>/ENTRY:start</code> part. The Microsoft linker prefixes all those names with an underscore ( 
+    <code>_</code>) when it actually looks them up inside the objects files which is why your entry point must have this prefix
+    inside the code, hence the name 
+    <code>_start</code> in the source code. The output is the same as usual so we should move on.</p>
+    <h1 id="WritingLinuxBSDApplicationsUsingx8632bitAssembly">Writing Linux/BSD Applications Using x86 32-bit Assembly</h1>
+    <p>Now that we have covered Windows x86 programming with various assemblers it is time to find out how to implement this
+    program on Linux/BSD, too. FASM runs on x86 Linux/BSD and NASM will run on any Linux/BSD aswell but I have already demonstrated
+    the syntax for those so I am just going to cover the infamous 
+    <b>GNU assembler version 2.17</b> in this section.</p>
+    <h2 id="as">as</h2>
+    <p>
+    <code>as</code> is the command to call the GNU assembler (short 
+    <code>gas</code>) on Linux/BSD systems. It comes with any sane distro so I really do not need to tell you where to get it.
+    Consult 
+    <code>apt-get</code> or 
+    <code>emerge</code> otherwise. It is generally agreed upon that the 
+    <code>gas</code> syntax is very archaic and esoteric. It uses the 
+    <b>AT&amp;T syntax</b> (as opposed to the 
+    <b>Intel syntax</b> I have been using so far) in which basically the order of all arguments for the x86 instructions is
+    reversed. Additionally it uses customised instruction names with -b, -w, -l suffixes to imply byte/word/long (1 byte, 2 bytes,
+    4 bytes). Additionally it introduces terribly redundant and complicated notations for offsets and cryptic register and number
+    prefixes. Luckily, a feature was introduced which enables crude Intel syntax support. I am going to use this feature in the
+    following code. Unluckily I had to use a silly hack to make it work properly because I could not find proper documentation on
+    replacements for standard operations which are not possible in the Intel syntax mode using the conventional ways. I am going to
+    show you some examples of conventional 
+    <code>gas</code> code later. For the record: I am using 
+    <code>GNU assembler version 2.17 (i486-linux-gnu) using BFD version 2.17 Debian GNU/Linux</code> and 
+    <code>collect2 version 4.1.2 20061115 (prerelease) (Debian 4.1.1-21) (i386 Linux/ELF)</code> in this example. Here is my
+    code:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+.code32 
+.intel_syntax noprefix 
+
+.section .data 
+
+    format_string : .string &quot;Arithmetic sum for the limit %d is %d\n&quot; 
+
+.section  .text 
+
+    calculate_sum :
+xor esi ,esi 
+mov edi ,1 
+jmp loop_start 
+    sum_loop :
+add esi ,edi 
+inc edi 
+    loop_start :
+cmp edi , [esp  +4 ]
+jle sum_loop 
+ret 4 
+
+.global main 
+
+main :
+xor ebx ,ebx 
+main_loop :
+push ebx 
+call calculate_sum 
+push esi 
+push ebx 
+lea edi ,format_string 
+push edi 
+call printf 
+add esp ,12 
+add ebx ,1 
+cmp ebx ,20 
+jle main_loop 
+xor eax ,eax 
+ret
+    </pre></code>
+    <p>You can probably figure out most of this stuff on your own by now, it is the same stuff over and over again. It is merely
+    the syntax that differs, the idea is usually still the same. 
+    <code>.section</code> declare sections, etc. 
+    <code>.code32</code> forces the assembler to produce 32-bit code instead of 64-bit code. This is only necessary if you are
+    running a 64-bit box. 
+    <code>.intel_syntax noprefix</code> does what I was talking about. It allows you to write code which is more similar to what
+    you are (hopefully) used to - the Intel syntax. 
+    <code>gas</code> is pretty low level by default as you can see and it does not offer any fancy macros as such. I think it
+    supports the C/C++ preprocessor specs, though. So you could write all kinds of crazy stuff using 
+    <code>#define</code> and such. The &quot;hack&quot; I was talking about in the introduction is 
+    <code>lea edi, format_string</code>. 
+    <code>lea</code> is short for &quot;load effective address&quot;. It is used to store the address of some object in a register,
+    so they say. In practice a simple 
+    <code>lea</code> is hardly any different from what 
+    <code>mov</code> does. In this case we could have achieved the same result using a 
+    <code>mov</code>. The problem is just that I have not figured out how to get the address of a string when you are using the 
+    <code>.intel_syntax noprefix</code> mode otherwise. In reality 
+    <code>lea</code> is only used to perform simple arithmetic operations because it possesses curious multiplicative and additive
+    capabilities which allow you to perform certain simple tasks much faster than with other native instructions but we will get
+    back to that later. In this case it is really simply a silly unnecessary hack so ignore it for now. In the next line I just
+    push the value of the register onto the stack but what I really wanted to do should be clear from the previous source code
+    flavours you have seen so far - I simply wanted to push the address of that label onto the stack. The only peculiar property of
+    Linux/BSD you can see in this code is that you do not use any special function to exit the program. You can simply 
+    <code>ret</code> from the main function and it will return the program exit code in 
+    <code>eax</code>.</p>
+    <p>Figuring out how to assemble and link this application on my Debian box was a painful process. I recommend that you simply
+    write a simple C program which performs something similar to what you intend to do first. Run 
+    <code>gcc</code> with 
+    <code>-S</code> in order to produce ASM output. Check out the 
+    <code>.s</code>-file ( 
+    <code>gas</code> ASM file extension) to get an idea. Proceed to run 
+    <code>gcc</code> again, this time without 
+    <code>-S</code> and with 
+    <code>-v</code>. That switch will tell you every single command it actually executes. At first it produces the ASM code, then
+    it assembles and links it. We can use this information to rip out the assembling and linking information to use with our
+    project. Be sure to include all libraries you intend to use in your ASM program in your C test program - the linking
+    information will pove invaluable. Here is how I assembled and linked this monstrosity:</p>
+    <pre><code>
+as -o calculate_sum_gas.o calculate_sum_gas.asm
+
+/usr/lib/gcc/i486-linux-gnu/4.1.2/collect2 --eh-frame-hdr -m elf_i386
+  -dynamic-linker /lib/ld-linux.so.2 -o sum_test /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+  /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+  -L/usr/lib/gcc/i486-linux-gnu/4.1.2 -L/usr/lib/gcc/i486-linux-gnu/4.1.2
+  -L/usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib -L/lib/../lib -L/usr/lib/../lib calculate_sum_gas.o -lgcc
+  --as-needed -lgcc_s --no-as-needed -lc -lgcc --as-needed -lgcc_s --no-as-needed
+  /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+    </pre></code>
+    <p>As you can see there is an excessive amount of arguments used to actually link this program. I am not sure how many of these
+    are even necessary but I will not bother to find out as long as it works. If you have a 64-bit Linux/BSD this might prove
+    problematic. You might need the right gcc library binaries etc to run this 32-bit example there. I previously claimed that the 
+    <code>gas</code> syntx is outrageously cryptic and difficult to understand. Here is the same same program using
+    &quot;normal&quot; 
+    <code>gas</code> syntax, without the 
+    <code>lea</code> hack:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+.code32 
+.section .data 
+
+    format_string : .string &quot;Arithmetic sum for the limit %d is %d\n&quot; 
+
+.section  .text 
+
+    calculate_sum :
+xorl  %esi , %esi 
+movl $1 , %edi 
+jmp loop_start 
+    sum_loop :
+addl  %edi , %esi 
+incl  %edi 
+    loop_start :
+cmpl 4 (%esp ), %edi 
+jle sum_loop 
+retl $4 
+
+.global main 
+
+main :
+xorl  %ebx , %ebx 
+main_loop :
+pushl  %ebx 
+call calculate_sum 
+pushl  %esi 
+pushl  %ebx 
+push $format_string 
+call printf 
+addl $12 , %esp 
+addl $1 , %ebx 
+cmp $20 , %ebx 
+jle main_loop 
+xorl  %eax , %eax 
+ret
+    </pre></code>
+    <p>The real 
+    <code>gas</code> syntax uses so many special characters that you get the feeling of looking at some esoteric programming
+    language like brainfuck. As long as I have a choice between various assemblers I definitely would not pick this one. 
+    <code>gcc</code> inline assembly has an even more outrageous and complicated syntax.</p>
+    <h1 id="PartialRegisters">Partial Registers</h1>
+    <p>One thing I did not tell you about, on purpose, until now, are the 
+    <b>partial registers</b> of the x86 architecture. This is because they frequently do harm and slow down programs when used
+    incorrectly. On the x86 architecture it is possible to access lower parts of all general purpose registers according to the
+    following pattern which I am going to demonstrate on 
+    <code>eax</code>:</p>
+    <table class="function" >
+      <tr>
+        <th>Bits 31 - 24</th>
+        <th>Bits 23 - 16</th>
+        <th>Bits 15 - 8</th>
+        <th>Bits 7 - 0</th>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>eax</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>ax</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td>
+          <code>ah</code>
+        </td>
+        <td>
+          <code>al</code>
+        </td>
+      </tr>
+    </table>
+    <p>So 
+    <code>eax</code> can contain 32-bits, alright, we already knew that. But 
+    <code>eax</code> also has the three partial registers 
+    <code>ax</code>, 
+    <code>ah</code> and 
+    <code>al</code>. These point to the data 
+    <code>eax</code> contains - they just show a smaller part of the same register. So 
+    <code>ax</code> represents the lower 16 bits of 
+    <code>eax</code>. 
+    <code>ah</code> represents the upper 8 bits of 
+    <code>ax</code> and 
+    <code>al</code> gives you the lower 8 bits of it. This has mostly backward compabitibility reasons. 
+    <code>ax</code> is the original 16-bit accumulator register the x86 architecture started with. The 
+    <code>e</code> in 
+    <code>eax</code> stands for &quot;extended&quot; since it is an extended version of 
+    <code>ax</code>. The 
+    <code>l</code> and the 
+    <code>h</code> in 
+    <code>al</code>/ 
+    <code>ah</code> stand for low/high. Not all general purpose registers feature the &quot;high&quot;/&quot;low&quot; partial
+    registers. They are only available on 
+    <code>eax</code>, 
+    <code>ebx</code>, 
+    <code>ecx</code> and 
+    <code>edx</code>. You can write to them and read from them just like normal registers. Here is a full list of all the other
+    32-bit registers and their partial registers:</p>
+    <table class="function">
+      <tr>
+        <th>Bits 31 - 24</th>
+        <th>Bits 23 - 16</th>
+        <th>Bits 15 - 8</th>
+        <th>Bits 7 - 0</th>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>eax</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>ax</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td>
+          <code>ah</code>
+        </td>
+        <td>
+          <code>al</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>ebx</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>bx</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td>
+          <code>bh</code>
+        </td>
+        <td>
+          <code>bl</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>ecx</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>cx</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td>
+          <code>ch</code>
+        </td>
+        <td>
+          <code>cl</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>edx</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>dx</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td>
+          <code>dh</code>
+        </td>
+        <td>
+          <code>dl</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>ebp</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>bp</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>esp</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>sp</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>esi</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>si</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <code>edi</code>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2"></td>
+        <td colspan="2">
+          <code>di</code>
+        </td>
+      </tr>
+    </table>
+    <p>The problem with using partial registers in 32-bit code is that they can cause so called 
+    <b>partial register stalls</b>. Reading from partial registers and writing to partial registers causes more dependencies than
+    doing the same to the full registers. This can stall the execution pipelines of the processor which results in a slowdown of
+    your code. Understanding what the execution pipeline is and how it works on modern CPUs requires a lot of explaining and it is
+    not yet the time to cover this topic. So all you should keep in mind for now is that you should always avoid using partial
+    registers. There usually is a faster solution which minimises partial register usage - usually totally eliminating it. Both the
+    Intel Optimization Manual and the AMD Software Optimization Guide strongly discourage the use of partial registers for this
+    very reason. Here are a few examples of how partial registers work:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+;in MASM syntax you use the following notation for hex numbers: 
+  
+mov eax ,012345678h 
+;this writes 0x12345678 to eax, the decisive parts are the 0-prefix and the h-suffix 
+  
+
+;the x86 instruction movzx is usually used to move values from 1-byte or 2-byte sized
+    operands to 32-bit registers 
+  
+;it writes them to the lower part of the register and sets the rest of the register to
+    0 
+  
+;the &quot;zx&quot; part stands for &quot;zero extend&quot; 
+  
+
+;read al, zero extend it and write it to ebx: 
+  
+movzx ebx ,al 
+
+;ebx now contains 0x00000078 
+  
+
+;read ah, zero extend it and write it to ebx: 
+  
+movzx ebx ,ah 
+
+;ebx now contains 0x00000056 
+  
+
+;read ax, zero extend it and write it to ebx: 
+  
+movzx ebx ,ax 
+
+;ebx now contains 0x00005678 
+  
+
+;normal mov: 
+  
+mov ebx ,eax 
+
+;ebx now contains 0x12345678
+    </pre></code>
+    <h1 id="Addresses">Addresses</h1>
+    <p>The x86 architecture allows us to use fairly complex expressions when we are addressing memory. The pattern it supports
+    is:</p>
+    <pre><code class="cpp hljs">
+address = base + index * scale + offset
+    </pre></code>
+    <p>The variables used in the pattern have the following meaning:</p>
+    <ul>
+      <li>
+      <code>base</code>: general purpose register</li>
+      <li>
+      <code>index</code>: general purpose register</li>
+      <li>
+      <code>scale</code>: 
+      <code>1</code>, 
+      <code>2</code>, 
+      <code>4</code> or 
+      <code>8</code></li>
+      <li>
+      <code>offset</code>: 32-bit integers</li>
+    </ul>
+    <p>To fully comprehend what this means you should take a look at the following example:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+;ebx &lt;&lt;= 3, shift it left by 3 bits 
+  
+shl ebx ,3 
+
+add eax ,ebx 
+add eax ,17 
+
+;the &quot;byte ptr&quot; signifies that we want to read a single byte only and not 2 or even
+    4 bytes 
+  
+;I have to use movzx because ecx is a 32-bit register and the byte is only 8 bits in
+    size 
+  
+movzx ecx ,byte ptr  [eax ]
+    </pre></code>
+    <p>So what this basically does is reading a single byte from memory. This byte is stored at the address 
+    <code>eax + (ebx &lt;&lt; 3) + 17</code>. Shifts can be expressed with multiplication/division with powers of two, in case you
+    never heard about it. Shifting 
+    <code>ebx</code> 3 bits to the left is the same as multiplying it by 8 because two to the power of three is equal to 8. In
+    general 
+    <code>n &lt;&lt;= a;</code> is equivalent to 
+    <code>n *= static_cast&lt;long&gt;(std::pow(2.0, static_cast&lt;double&gt;(a)));</code> and 
+    <code>n &gt;&gt;= a;</code> is equivalent to 
+    <code>n /= static_cast&lt;long&gt;(std::pow(2.0, static_cast&lt;double&gt;(a)));</code>, assuming that 
+    <code>a</code> and 
+    <code>n</code> are both of type 
+    <code>long</code>. This is a direct result of the positional notation I formulated mathematically at the beginning of this
+    document. By shifting you basically add zeroes or remove digits from the sequence of digits. This leads to multiplications by
+    the powers of the base or integer divisions with the same. The great thing is that the x86 architecture allows us to do all of
+    those things in a single step:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+movzx ecx ,byte ptr  [eax  +ebx  *8  +17 ]
+    </pre></code>
+    <p>It is a really useful feature and has lots of applications. In combination with 
+    <code>lea</code> you can even use it to accelerate simple arithmetic operations which would usually require several steps for
+    multiplication and addition so do keep it in mind.</p>
+    <h1 id="ControlStructures">Control Structures</h1>
+    <p>In the introduction I stated that this document is intended for people who are already familiar with iterative high level
+    programming languages such as C/C++. At the beginning it is difficult to stop thinking in terms of 
+    <code>if</code>, 
+    <code>for</code> and 
+    <code>while</code> and to start thinking in terms of labels and conditional jumps so I wanted to show you a few examples which
+    demonstrate how to translate these standard control structures to x86 32-bit assembly. My apology to Linux/BSD users - but I am
+    going to use Windows specific API calls in these examples occasionally.</p>
+    <p>The first thing we are going to check out is the basic 
+    <b>
+    <code>if</code>-construct</b>:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+if (lstrlen(some_string) &gt;32 )
+    return  -1 ;
+return 0 ;
+    </pre></code>
+    <p>Here is the equivalent x86 32-bit ASM code:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+ invoke lstrlen ,addr some_string 
+ cmp eax ,32 
+ jle return_zero 
+ mov eax ,-1 
+ ret 
+ return_zero :
+ xor eax ,eax 
+ ret
+    </pre></code>
+    <p>So the original comparison operator was &quot;greater than&quot; but in x86 assembly we jump away from the 
+    <code>if</code>-body so we need to check for the exact opposite of the original condition. The logical negation of
+    &quot;greater than&quot; is &quot;less than or equal to&quot; so we use 
+    <code>jle</code> in this case. Here is a list of logical negations of standard operators:</p>
+    <table class="function">
+      <tr>
+        <th>Original operator</th>
+        <th>Logical negation</th>
+      </tr>
+      <tr>
+        <td>
+          <code>==</code>
+        </td>
+        <td>
+          <code>!=</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>!=</code>
+        </td>
+        <td>
+          <code>==</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>&lt;</code>
+        </td>
+        <td>
+          <code>&gt;=</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>&gt;</code>
+        </td>
+        <td>
+          <code>&lt;=</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>&lt;=</code>
+        </td>
+        <td>
+          <code>&gt;</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>&gt;=</code>
+        </td>
+        <td>
+          <code>&lt;</code>
+        </td>
+      </tr>
+    </table>
+    <p>The 
+    <b>
+    <code>if</code>- 
+    <code>else</code></b> construct is next:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+void  divisor_check(int  divisor)
+{
+if (divisor ==0 )
+        puts(&quot;Division by zero!&quot; );
+else 
+        puts(&quot;Valid division&quot; );
+    puts(&quot;This gets executed in either case&quot; );
+}
+    </pre></code>
+    <p>The approximate equivalent in x86 ASM is:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+.data 
+  
+
+division_by_zero db &quot;Division by zero!&quot; ,0 
+valid_division db &quot;Valid division&quot; ,0 
+either_case db &quot;This gets executed in either case&quot; ,0 
+
+.text 
+
+divisor_check proc divisor :dword 
+cmp  [esp  +4 ],0 
+jne else_label 
+invoke puts ,addr division_by_zero 
+jmp end_of_if 
+    else_label :
+invoke puts ,addr valid_division 
+    end_of_if :
+invoke puts ,addr either_case 
+ret
+    </pre></code>
+    <p>So if the result of the comparison implies that the 
+    <code>else</code> body must be executed we jump to the 
+    <code>else</code>-label and simply continue the execution after that because it gets us right where we are supposed to be
+    anyways. In the other case the first jump is not taken but we must not fall through to the 
+    <code>else</code>-body so an unconditional jump is necessary to take us to the end of the 
+    <code>if</code>-structure.</p>
+    <p>Let us move on to the 
+    <b>
+    <code>while</code>-construct</b>:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+long  i =0 ;
+while (data[i] &gt;=128  || some_function(data[i]))
+    i++;
+    </pre></code>
+    <p>Let us assume that 
+    <code>i</code> gets stored in the general purpose register 
+    <code>eax</code> and that 
+    <code>data</code> is a string/an array of bytes. then the approximate equivalent in x86 ASM is:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+xor eax ,eax 
+loop :
+movzx ebx ,byte ptr  [array  +eax ]
+cmp ebx ,128 
+jge iterate 
+invoke some_function ,ebx 
+test eax ,eax 
+jz end_of_loop 
+iterate :
+inc eax 
+jmp loop 
+end_of_loop :
+    </pre></code>
+    <p>I am using the new instruction 
+    <code>test</code> in this example. 
+    <code>test</code> is to the logical 
+    <code>AND</code> what 
+    <code>cmp</code> is to subtraction. It performs the a logical 
+    <code>AND</code> using the operands behind the instruction as arguments for the logical function but it does not store the
+    result of it anywhere. It is simply used to set the flags. If you look closely at the logical table for 
+    <code>AND</code> you will realise that for all boolean values 
+    <code>a</code> the term 
+    <code>a &amp; a</code> evaluates to 
+    <code>a</code>. This is called 
+    <b>idempotence</b>. An idempotent operation can be applied to a variable over and over again but in the end it always evaluate
+    to the same variable again. The logical 
+    <code>OR</code> operation is idempotent aswell. So what 
+    <code>test eax, eax</code> really does is checking the value of 
+    <code>eax</code> and setting the flags accordingly. In this case we use it to determine whether the register is equal to zero.
+    In case you are not used to this particular feature of C/C++: 
+    <code>while(data[i] &gt;= 128 || some_function(data[i]))</code> is equivalent to 
+    <code>while(data[i] &gt;= 128 || some_function(data[i]) != 0)</code> - which is why we jump out of the loop if that part of the
+    boolean term fails, too. We could even optimise this loop by using an initial jump to enter the loop and putting the iteration
+    at the beginning of the body:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+xor eax ,eax 
+jmp enter_loop 
+
+iterate :
+inc eax 
+
+enter_loop :
+movzx ebx ,byte ptr  [array  +eax ]
+cmp ebx ,128 
+jge iterate 
+invoke some_function ,ebx 
+test eax ,eax 
+jnz iterate
+    </pre></code>
+    <p>We do have that additional jump at the beginning now but you always have to keep in mind that 99% of all CPU time is spent
+    inside loops. Optimising the body of a loop greatly outweighs such a one-time operation. The new body looks unintuitive and
+    does not remind one of the original C/C++ code at all so I did not want to start with it right away and used the less optimised
+    version first.</p>
+    <p>Now that we have covered 
+    <code>if</code> and 
+    <code>while</code> the next part is not a big deal. It is time for the 
+    <b>
+    <code>for</code>-statement</b>:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+for (long  i =1 ; i &lt;=10 ; i++)
+    printf(&quot;Iteration step  %d \n &quot; , i);
+    </pre></code>
+    <p>Here is the equivalent x86 32-bit ASM code:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+.data 
+  
+
+iteration_string db &quot;Iteration step %d\n&quot; ,0 
+
+.text 
+
+    _start :
+
+mov ebx ,1 
+    loop :
+invoke printf ,addr iteration_string ,ebx 
+inc ebx 
+cmp ebx ,10 
+jle loop 
+
+;...
+    </pre></code>
+    <p>What we actually do here is skipping the first comparison 
+    <code>1 &lt;= 10</code> because we know that is true anyways. If you have a more complex iteration condition where you cannot
+    tell whether the first iteration will always occur you can obviously not skip it so be careful with optimisations like
+    these.</p>
+    <h1 id="MultiplicationandDivisionofIntegers">Multiplication and Division of Integers</h1>
+    <p>Multiplication and division of integers on the x86 architecture are not as intuitive as the addition and subtraction of
+    integers. The largest unsigned integers you can store in a 32-bit general purpose register has the value \(2^{32} - 1\) so when
+    we have two of those and multiply them we get \((2^{32} - 1) \cdot (2^{32} - 1) = 2^{64} - 2 \cdot 2^{32} + 1 = 2^{64} - 2^{33}
+    + 1 = 18446744065119617025 = m\). In order to calculate how many bits this number requires to be represented in a standard
+    binary positional system we use the formula \(\lceil \frac{\log{m}}{\log{b}} \rceil\) with a base of \(b = 2\): \(\lceil
+    \frac{\log{18446744065119617025}}{\log{2}} \rceil \approx \lceil 63.9999999993281927699 \ldots \rceil = 64\). This means that
+    the result of multiplications in general is at least 64 bits in size. But our x86 architecture has only 32-bit general purpose
+    registers so how is this dealt with? The result is stored in two registers. The 
+    <code>mul reg</code> instruction is used for the multiplication of two unsigned 32-bit integers. It takes a single argument - a
+    general purpose register. It uses 
+    <code>eax</code> as the other factor so what it calculates is 
+    <code>eax * reg</code>. The result is stored in 
+    <code>edx:eax</code> which means that the upper 32 bits get stored in 
+    <code>edx</code> and the lower 32 bits of the result are stored in 
+    <code>eax</code>. Example:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+mov eax ,012345678h 
+mov edx ,012345678h 
+mul edx 
+;The result of this multiplication is: 
+  
+;0x12345678 * 0x12345678 = 0x014B66DC1DF4D840 
+  
+;Which produces the following values of edx and eax: 
+  
+;edx = 0x014B66DC 
+  
+;eax = 0x1DF4D840
+    </pre></code>
+    <p>Multiplications used to be considerably more expensive than addition and subtraction. Multiplication is considerably more
+    expensive than say addition or subtraction in terms of execution time. The 
+    <code>imul</code> instruction is used for the multiplication of signed integers and it supports more operands. Like 
+    <code>mul</code>, it can store the result in 
+    <code>edx:eax</code>, taking only a single argument. But it can also take multiple registers and even an immediate value but it
+    will discard the upper 32-bits of the result then. Example:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+mov eax ,-2 
+mov ebx ,-2 
+imul ebx 
+;edx:eax = (-2) * (-2) = 4 = 0x0000000000000004 
+  
+
+;Let us use the largest positive signed integers possible: 
+  
+mov edi ,2147483647 
+mov esi ,2147483647 
+
+;this stores the result in edi and discards the upper 32 bits: 
+  
+imul edi ,esi 
+;2147483647 * 2147483647 = 4611686014132420609 = 0x3FFFFFFF00000001 
+  
+;edi = 0x00000001 
+  
+;0x3FFFFFFF is discarded 
+  
+
+mov eax ,10 
+mov ebx ,20 
+
+;this simply adds another factor to the multiplication: 
+  
+imul eax ,ebx ,3 
+;10 * 20 * 3 = 600 
+  
+;upper 32 bit are discarded but they are 0 anyways, so: 
+  
+;eax = 600 = 0x00000258
+    </pre></code>
+    <p>Division is far more expensive than multiplication. The 
+    <code>div reg</code> instruction is used for unsigned division. It performs the division 
+    <code>edx:eax / reg</code> and stores the quotient in 
+    <code>eax</code>, the remainder in 
+    <code>edx</code>. In case you do not even know what those words mean I am going to explain it with a small example: \(17 : 5 =
+    3 + \frac{2}{5}\). The result of the division 
+    <code>17 / 5</code> is 3 and the remainder is 2 because \(3 \cdot 5 + 2 = 15 + 2 = 17\). You might wonder why the x86
+    architecture supports 64-bit dividends but only 32-bit divisors. I am not absolutely sure why this is, actually. But it was
+    probably more convenient at the time and it is not a big deal to work around it. Usually you do not require such large numbers
+    anyways. Enough of this primary school stuff, let us have a look at a few examples:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+mov eax ,100 
+xor edx ,edx 
+mov ebx ,10 
+div ebx 
+;edx:eax / ebx = 100 / 10 = 10 
+  
+;edx:eax % ebx = 0 
+  
+;Quotient: eax = 10 
+  
+;Remainder: edx = 0 
+  
+
+mov eax ,21 
+div ebx 
+;edx:eax / ebx = 21 / 10 = 2 
+  
+;edx:eax % ebx = 21 % 10 = 1 
+  
+;Quotient: eax = 2 
+  
+;Remainder: edx = 1
+    </pre></code>
+    <p>Just like there are 
+    <code>mul</code> and 
+    <code>imul</code>, there is the 
+    <code>idiv</code> instruction for signed division. It works just like 
+    <code>div</code>, though. The remainder is always the same sign as the quotient:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+;Set edx:eax to -100 
+  
+mov eax ,-100 
+mov edx ,-1 
+;-1 because we want all upper bits to be 1 - it is Two&#39;s complement! 
+  
+
+mov ebx ,10 
+idiv ebx 
+;edx:eax / ebx = - 100 / 10 = - 10 
+  
+;edx:eax % ebx = 0 
+  
+;Quotient: eax = 10 
+  
+;Remainder: edx = 0 
+  
+
+mov eax ,-21 
+mov edx ,-1 
+div ebx 
+;edx:eax / ebx = - 21 / 10 = - 2 
+  
+;edx:eax % ebx = - 21 % 10 = - 1 
+  
+;Quotient: eax = - 2 
+  
+;Remainder: edx = - 1
+    </pre></code>
+    <h1 id="FloatingPointOperations">Floating Point Operations</h1>
+    <p>Now that we have covered the most important integer operations we should move on to floating point instructions. The CPU
+    contains many different units which work together when a program is executed. Instructions like 
+    <code>add</code>, 
+    <code>sub</code>, 
+    <code>xor</code>, 
+    <code>shl</code>, 
+    <code>mul</code> and 
+    <code>idiv</code> are all executed on the so called 
+    <b>Arithmetic Logical Unit</b> (ALU). The operations we are going to concern ourselves with are executed in a completely
+    different unit. It is called the 
+    <code>Floating Point Unit</code> (FPU). This is where stuff like 
+    <code>0.942 - 7.183 = -6.241</code> is calculated. The x86 architecture implements the IEEE-754 standard ( 
+    <a href="http://en.wikipedia.org/wiki/IEEE_floating-point_standard">http://en.wikipedia.org/wiki/IEEE_floating-point_standard</a>)
+    and offers support for three different precision formats:</p>
+    <ol>
+      <li>Single precision 32-bit floating point numbers ( 
+      <code>float</code> in C/C++)</li>
+      <li>Double precision 64-bit floating point numbers ( 
+      <code>double</code> in C/C++)</li>
+      <li>Extended precision 80-bit floating point numbers ( 
+      <code>long double</code> in C/C++)</li>
+    </ol>
+    <p>We are going to explore the mathematical concept behind this system first. The real numbers \(\mathbb{R}\) know no bounds
+    and even if we specify boundaries for them they are still not discrete. There are infinitely many real values between the
+    numbers 0 and 1 so we have to make sacrifices to represent real numbers with boundaries and approximative capabilities that
+    meet our requirements. We can only represent approximations of most real values using this concept. A few of them which are
+    composed of sums of positive/negative powers of 2 can be represented flawlessly without error using IEEE-754. We are going to
+    examine the smallest of the three formats in this part of the document only. The others are based on the same idea and just use
+    different parameters really.</p>
+    <p>The IEEE-754 32-bit precision format divides the 32-bit value into 3 different sections:</p>
+    <table class="function">
+      <tr>
+        <th>Section</th>
+        <th>Size</th>
+        <th>Bit range</th>
+      </tr>
+      <tr>
+        <td>Sign</td>
+        <td>1 bit</td>
+        <td>31 - 31</td>
+      </tr>
+      <tr>
+        <td>Biased exponent</td>
+        <td>8 bits</td>
+        <td>30 - 23</td>
+      </tr>
+      <tr>
+        <td>Mantissa</td>
+        <td>23 bits</td>
+        <td>22 - 0</td>
+      </tr>
+    </table>
+    <p>The mantissa expresses a fraction of the form 1.x where x is expressed by the mantissa. The numbers are encoded using the
+    Big Endian format (most significant bit first). Let \(s\) stand for the sign bit, \(be\) for the biased exponent and \(m_i\)
+    with \(i \in \{1, 2 \ldots 23\}\) for the mantissa bits \(m_1 m_2 \ldots m_{23}\) (they are read from the left to the right),
+    then the value most IEEE-754 encoded reals represent can be determined using the following formula:</p>\(\mbox{ value } =
+    (-1)^s \cdot 2^{be - 127} \cdot (1 + \sum_{i = 1}^{23} m_i \cdot 2^{-i})\)
+    <p>The \((-1)^s\) part simply changes the sign according to the sign bit. The value is negative if the sign bit is set to 1 and
+    positive if it is set to 0. \(2^{be - 127}\) is where the the power of 2 gets expressed through the actual exponent \(e = be -
+    127\). The &quot;bias&quot; I was talking about is a necessity to allow the exponent to be negative. Otherwise we would have
+    positive/zero exponents only and we would be unable to express numbers \(r \in \mathbb{R} \land |r| &lt; 1\) since this
+    requires negative powers of 2. The mantisa represents the binary digits to the right of the point in a number like \(1.1101_2\)
+    which had the leading &quot;1.&quot; simply chopped off. Let us manually convert the number 149.8 to the IEEE-754 single
+    precision format. At first we require a binary representation of this decimal number. We examine the part to the left of the
+    point first and repeatedly perform divisions by 2, splitting the result into an integer part and a rational part after each
+    step. Then we repeat the procedure with this integer part until it eventually becomes zero.</p>
+    <pre><code>
+149 / 2 = 74 + 1 / 2
+ 74 / 2 = 37 + 0 / 2
+ 37 / 2 = 18 + 1 / 2
+ 18 / 2 =  9 + 0 / 2
+  9 / 2 =  4 + 1 / 2
+  4 / 2 =  2 + 0 / 2
+  2 / 2 =  1 + 0 / 2
+  1 / 2 =  0 + 1 / 2
+    </pre></code>
+    <p>You get the binary representation of the left part of the number by reading the &quot;bit stream&quot; on the right
+    bottom-up, which gives us the binary number 10010101 which is indeed equal to the decimal representation 149. The part to the
+    right of the of the point works in a similar fashion but it can be tricky at times because some numbers cannot be expressed
+    with a finite number of digits in another base. We chop off the left part of the number and replace it with 0. We repeatedly
+    multiply it by 2, chopping off the leading digit to replace it with 0 each step. We are done until there is a 0 left or until
+    we discover a periodic pattern or until we simply hit the limit for the precision:</p>
+    <pre><code>
+0.8 * 2 = 1.6 =&gt; 1 &lt;--+
+0.6 * 2 = 1.2 =&gt; 1    | periodic pattern detected
+0.2 * 2 = 0.4 =&gt; 0    |
+0.4 * 2 = 0.8 =&gt; 0 ---+
+    </pre></code>
+    <p>We discovered a periodic pattern which means that 0.8 cannot be written in binary notation in a finite number of digits
+    without any loss of precision. We conclude:</p>\(149.8_{10} = 10010101.\overline{1100}_2\)
+    <p>We can prove this mathematically by making use of geometric series with \(a \in \mathbb{R} \land 0 &lt; a &lt;
+    1\):</p>\(\sum_{i = 0}^{\infty} a^i = \frac{1}{1 - a}\)
+    <p>All we need to do is to perform some index shifts and splitting up of sums to show the desired
+    result:</p>\(0.\overline{1100}_2 = \sum_{i = 1}^{\infty} (1 \cdot 2^{- (4i - 3)} + 1 \cdot 2^{- (4i - 2)} + 0 \cdot 2^{- (4i -
+    1)} + 0 \cdot 2^{- (4i)}) = \frac{8}{15} + \frac{4}{15} = \frac{4}{5} = 0.8\)
+    <p>The next step in the conversion process is shifting our binary representation of the number to the left or to the right such
+    that it has the form &quot;1.x&quot;. We have to keep track of the number of shifting steps we performed and of the direction
+    aswell. We store this information in the exponent of a power of two:</p>\(10010101.\overline{1100}_2 = 2^7 \cdot
+    1.0010101\overline{1100}_2 = (-1)^0 \cdot 2^{134 - 127} \cdot (1 + 0.0010101\overline{1100}_2)\)
+    <p>As you can see I algebraically manipulated the term so it matches the pattern in the original formula I showed to you. Now
+    we can simply read off the values:</p>\(s = 0 \land be = 134 \land m = (m_1, m_2 \ldots m_{23}) = (0, 0, 1, 0, 1, 0, 1, 1, 1,
+    0, 0, 1, 1, 0, 0 \ldots)\)
+    <p>We are nearly done, we simply need to convert the biased exponent to its 8-bit binary representation now:</p>
+    <pre><code>
+134 / 2 = 67 + 0 / 2
+ 67 / 2 = 33 + 1 / 2
+ 33 / 2 = 16 + 1 / 2
+ 16 / 2 =  8 + 0 / 2
+  8 / 2 =  4 + 0 / 2
+  4 / 2 =  2 + 0 / 2
+  2 / 2 =  1 + 0 / 2
+  1 / 2 =  0 + 1 / 2
+    </pre></code>
+    <p>This is the same algorithm we used before and it tells us that the binary representation is 10000110. So the IEEE-754
+    representation of the decimal value 149.8 is:</p>
+    <pre><code>
+Sign : biased exponent : mantissa
+
+0 : 10000110 : 00101011100110011001100
+
+= 01000011 00010101 11001100 11001100
+    </pre></code>
+    <p>In the case of periodic binary representations you simply repeat the periodic digit group until you hit the limits imposed
+    by the 23 bit boundary for the mantissa. Let us get back to the x86 architecture. The other formats simply use different biased
+    exponent and mantissa sizes which also forces them to use different bias values, obviously. There are certain special cases for
+    invalid numbers, infinity and zero and such but it is not relevant for this document, really. Check out 
+    <a href="http://en.wikipedia.org/wiki/IEEE_floating-point_standard">http://en.wikipedia.org/wiki/IEEE_floating-point_standard</a>
+    if you are interested in the topic.</p>
+    <p>The FPU contains 8 80-bit elements called 
+    <code>st(0)</code>, 
+    <code>st(1)</code>, ..., 
+    <code>st(7)</code>. I did not say &quot;register&quot; because they are implemented as a stack so 
+    <code>st(0)</code> always refers to the top element, 
+    <code>st(1)</code> to the below the top, etc. This makes it quite tricky to use. Honestly, I am not even quite sure why they
+    implemented it this way. Maybe it makes some common operations shorter this way or something like that. FPU code is very
+    fragile and often hard to read. I strongly recommend reading a good instruction set reference simultaneously when you are
+    working with FPU code. There are lots of details you have to pay attention to and it is easy to make mistakes so be extra
+    careful with FPU code. Let us start out with some easy examples to see how the FPU stack works. Here is the state of the FPU at
+    the beginning of the program:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(2)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(3)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(4)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(5)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(6)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>All FPU instructions have the 
+    <code>f-</code> prefix. If they have a 
+    <code>-p</code> suffix it means that they pop the top element off the stack at the end of their execution. We are going to
+    execute the following instructions on the FPU now:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+;... 
+  
+
+;push one on top of the stack 
+  
+fld1 
+  
+;push zero on top of the stack 
+  
+fldz 
+  
+;add them up and store the result in st(0) 
+  
+fadd st(0) ,st(1) 
+;add the top two elements up and store the result in st(1), pop the stack 
+  
+faddp st(1) ,st(0) 
+
+;...
+    </pre></code>
+    <p>Let us go through the changes in the FPU stack, instruction by instruction. Changes to registers are marked in red. We start
+    out with 
+    <code>fld1</code>:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <span class="monospace">
+            <span class="red">1.0</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(2) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>
+    <code>fldz</code> adds another well known constant to the top of the stack:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <span class="monospace">
+            <span class="red">0.0</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1)</code>
+        </td>
+        <td>
+          <code>1.0</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(2) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>Perform the addition 
+    <code>st(0) = st(0) + st(1);</code> with the specified stack elements using 
+    <code>fadd</code>:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <span class="monospace">
+            <span class="red">1.0</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1)</code>
+        </td>
+        <td>
+          <code>1.0</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(2) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>As you can see the rest of the stack remains the same. We are going to look at the next one in two steps because it
+    basically does two things. We have the FPU perform the addition 
+    <code>st(1) = st(1) + st(0);</code> using 
+    <code>faddp</code>, which discards the top element after the addition:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <code>1.0</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1)</code>
+        </td>
+        <td>
+          <span class="monospace">
+            <span class="red">2.0</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(2) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <code>2.0</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(2) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>So how do you load floating point values from memory onto the FPU stack and how do you store them in memory again? Take a
+    look at the following snippet:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+.data 
+  
+
+some_float dd 0.123 
+some_double dq 4.556456823 
+
+.data? 
+  
+
+float_storage dd ? 
+double_storage dq ? 
+
+.text 
+
+;... 
+
+;load float from memory and push it on the top of the stack: 
+fld some_float 
+;load double from memory and push it on the top of the stack: 
+fld some_double 
+;add them up and pop the stack: 
+faddp st(1) ,st(0) 
+;store the result as a float: 
+fst float_storage 
+;store the result as a double (in case we need more precision) and pop the stack so it&#39;s
+  empty again: 
+fstp double_storage 
+
+;...
+    </pre></code>
+    <p>The first new thing in this code is the 
+    <code>dq</code> (declare quadword) assembler directive which we use to initialise double precision floats (64 bits, 8 bytes).
+    In this case I use it to define static values which I load onto the FPU stack. Let us go through the changes again, instruction
+    by instruction. In the beginning the stack is totally empty:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>
+    <code>fld some_float</code> pushes the approximation of 0.123 onto the stack:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <span class="monospace">
+            <span class="red">0.123</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>
+    <code>fld some_double</code> does the same again, just with a double precision value which is an approximation of
+    4.556456823:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <span class="monospace">
+            <span class="red">4.556456823</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1)</code>
+        </td>
+        <td>
+          <code>0.123</code>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(2) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>
+    <code>faddp st(1), st(0)</code> adds them up and pops the stack, just like we have seen before in the previous example:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0)</code>
+        </td>
+        <td>
+          <span class="monospace">
+            <span class="red">4.679456826</span>
+          </span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <code>st(1) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>
+    <code>fst float_storage</code> stores the top of the stack as a 32-bit single precision value in memory at the specified
+    address. It does not modify the FPU stack in any way, though. 
+    <code>fstp double_storage</code> does, though. After storing the double precision value in 
+    <code>double_storage</code> it pops the top off the stack:</p>
+    <table class="function">
+      <tr>
+        <th>Position</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>
+          <code>st(0) - st(7)</code>
+        </td>
+        <td>
+          <code>undefined</code>
+        </td>
+      </tr>
+    </table>
+    <p>Now that we have covered the basics of the FPU stack is time to move on to a more elaborate example of how to use the FPU.
+    Here is the original C++ code we are going to translate to x86 32-bit assembly:</p>
+    <p class="codeTitle">C++</p>
+    <pre><code class="cpp hljs">
+double  f(double  x)
+{
+char  buffer[10 ];
+return  std::sin(x * x +1.0 ) /2.0 ;
+}
+
+int  main()
+{
+for (double  i = 0.0 ; i &lt;1.0 ; i += 0.1 )
+    {
+double  value = f(i);
+        printf(&quot;f( %.1f ) =  %.4f , first two digits:  %ld \n &quot; , i, value,static_cast &lt;long &gt;(100  *
+
+    }
+    std::cin.get();
+return 0 ;
+}
+    </pre></code>
+    <p>The FPU example code I came up with is quite nasty I must say. I apologise in advance. Here is my translation to x86
+    ASM:</p>
+    <p class="codeTitle">Assembly</p>
+    <pre><code class="x86asm hljs">
+.686p 
+  
+.model flat ,stdcall 
+
+option epilogue :none 
+option prologue :none 
+
+GetStdHandle proto  :dword 
+wsprintfA protoc  :vararg 
+WriteConsoleA proto  :dword , :dword , :dword , :dword , :dword 
+ExitProcess proto  :dword 
+
+STD_OUTPUT_HANDLE equ -11 
+
+.data 
+  
+
+format_string db &quot;f(%s) = %s, first two digits: %d&quot; ,10 ,0 
+iteration_step dq 0.1 
+hundred dq 100.0 
+ten dq 10.0 
+half dq 0.5 
+
+one_two_three dq 123.456789 
+
+.data? 
+  
+
+number_buffer db 16dup  (? )
+number_buffer2 db 16dup  (? )
+buffer db 64dup  (? )
+bytes_written dd ? 
+
+iterator dq ? 
+
+.code 
+  
+
+f proc 
+fmul st(0) ,st(0) 
+fld1 
+faddp st(1) ,st(0) 
+fsin 
+fmul half 
+ret 
+f endp 
+
+write_double proc double_buffer :dword ,precision :dword 
+fstqword ptr  [esp  -12 ]
+mov esi , [esp  +4 ]
+movbyte ptr  [esi ],&#39;.&#39; 
+fld st(0) 
+fisttpdword ptr  [esp  -4 ]
+mov eax , [esp  -4 ]
+mov ecx ,10 
+    write_left_digits :
+xor edx ,edx 
+div ecx 
+add edx ,&#39;0&#39; 
+dec esi 
+movbyte ptr  [esi ],dl 
+test eax ,eax 
+jnz write_left_digits 
+mov ecx , [esp  +4 ]
+mov eax , [esp  +8 ]
+    write_right_digits :
+filddword ptr  [esp  -4 ]
+fsubp st(1) ,st(0) 
+fmul ten 
+fld st(0) 
+fisttpdword ptr  [esp  -4 ]
+mov ebx , [esp  -4 ]
+add ebx ,&#39;0&#39; 
+inc ecx 
+movbyte ptr  [ecx ],bl 
+dec eax 
+jnz write_right_digits 
+movbyte ptr  [ecx  +1 ],0 
+fstp st(0) 
+fldqword ptr  [esp  -12 ]
+ret 8 
+write_double endp 
+
+public main 
+
+main :
+invoke GetStdHandle ,STD_OUTPUT_HANDLE 
+mov ebp ,eax 
+
+fldz 
+
+    main_loop :
+fst iterator 
+invoke write_double ,addr number_buffer  +8 ,4 
+mov edi ,esi 
+call f 
+invoke write_double ,addr number_buffer2  +8 ,6 
+fld st(0) 
+fmul hundred 
+fisttpdword ptr  [esp  -4 ]
+mov eax , [esp  -4 ]
+invoke wsprintfA ,addr buffer ,addr format_string ,edi ,esi ,eax 
+invoke WriteConsoleA ,ebp ,addr buffer ,eax ,addr bytes_written ,0 
+fstp st(0) 
+fld iterator 
+fadd iteration_step 
+fld1 
+fcomip st(0) ,st(1) 
+jnb main_loop 
+invoke ExitProcess ,0 
+end
+    </pre></code>
+    <p>Let us start with the 
+    <code>main</code> code. 
+    <code>fldz</code> pushes the zero constant on the stack. So after execution this instruction 
+    <code>st(0)</code> contains zero while all other FPU registers are still undefined/empty. If you use such an undefined register
+    in an FPU operation you will cause an exception. If you try to pop an element off an empty stack - meaning, all values are
+    undefined - you will get an exception, too. Another thing you have to watch out for is stack overflow. You cannot just keep on
+    adding more elements onto the stack. If all registers have been set and you push an additional element onto the stack you will
+    cause an FPU stack overflow so keep track of the height of your FPU stack at all times. 
+    <code>fst iterator</code> reads the 64-bit value from 
+    <code>st(0)</code> and stores it at the memory location 
+    <code>iterator</code> - the stack remains the same. On the next line 
+    <code>write_double</code> gets called for the first time. This is a stupid workaround I had to come up with because the Windows
+    API does not offer any functions which allow you to convert floating point numbers to strings to my knowledge. I tried to use
+    the Microsoft Visual C Runtime but those attempts did not bear any fruit either because using 
+    <code>msvcrt</code> in ASM is pretty tricky nowadays. You have to link the application with those silly manifest files and
+    annoying stuff like that so I eventually gave up on making, say, 
+    <code>printf</code> work and wrote my own double -&gt; string converter.</p>
+    <p>The 
+    <code>write_double</code> body starts out with 
+    <code>fst dword ptr [esp - 12]</code>. This is not any different from the previous 
+    <code>fst</code> store call really, it simply does not use an address which is known as compile time. Instead we use unused
+    bytes on the stack to store it temporarily locally. The 
+    <code>qword ptr</code> part is necessary because the assembler cannot magically know what format we actually want to store. It
+    could be single precision, double precision or even extended precision - it simply cannot tell. With the prior 
+    <code>fst</code> call this was not necessary because the size of that object is defined in the data section. The 
+    <code>fld</code> loads values and pushes them on top of the stack. This value can be a location in memory or even an FPU
+    register. In this case we are using 
+    <code>fld st(0)</code> which basically just duplicates the top of the stack. 
+    <code>fisttp dword ptr [esp - 4]</code> performs a 
+    <code>double</code> to 
+    <code>int</code> conversion and stores the result at the specified memory location. This function simply truncates the digits
+    to the right of the decimal point away. So we would convert something like 
+    <code>2.913</code> to 
+    <code>2</code>. In the following loop we perform a conventional integer to decimal ASCII number conversion by repeatedly
+    dividing the integer by 10, adding 
+    <code>0x30</code> to it, and writing the lower byte of the register to a buffer. This buffer gets first filled from right to
+    left, starting with the decimal point. In the 
+    <code>write_right_digits</code> section we read the decimal digits to the right of the decimal point from the number by
+    repeatedly multiplying it by 10, converting it to an integer, converting the integer to a decimal digit which gets added to the
+    buffer and by eventually subtracting the integer from the double again to get rid of the digit to the left of the decimal
+    point. The buffer gets filled from the left to the right, starting with the byte to the right of the decimal point. It starts
+    with 
+    <code>fild dword ptr [esp - 4]</code>. This instruction loads an integer from memory, converts it to a double and pushes it
+    onto the FPU stack so we can access it via 
+    <code>st(0)</code>. 
+    <code>fsubp st(1), st(0)</code> performs the calculation 
+    <code>st(1) - st(0)</code> and stores the result in 
+    <code>std(1)</code>. Additionally it pops off the top of the stack so what was once 
+    <code>st(1)</code> is now 
+    <code>st(0)</code>. You can tell this from the 
+    <code>-p</code> suffix in the mnemonic. 
+    <code>fmul ten</code> multiplies 
+    <code>st(0)</code> with the value 
+    <code>10.0</code> which is stored in memory. The result of the operation gets stored in 
+    <code>std(0)</code> again. It is followed by another 
+    <code>fld st(0)</code> which duplicates the top of the stack. It is necessary because we are going to use 
+    <code>fisttp</code> on the next line. Unlickily this instruction does not feature any non 
+    <code>-p</code> version so we are forced to perform that somewhat redundant additional FPU stack push. So what this loop does
+    is simply writing a certain number of digits to the right of the decimal point. The number is specified by the second agument 
+    <code>precision</code>. At the end of the function you can see a 
+    <code>fstp st(0)</code>. This stores 
+    <code>st(0)</code> in 
+    <code>st(0)</code> and pops the top element of the stack (which is 
+    <code>st(0)</code>. So it basically works like a pop - with the exception of being somewhat unintuitive and cryptic. At the
+    very end 
+    <code>fld qword ptr [esp - 12]</code> is called. This restores the original value 
+    <code>st(0)</code> had when the function was first called because we wrote it to that part of the memory in the beginning.</p>
+    <p>After returning from 
+    <code>write_double</code> for the first time the function 
+    <code>f</code> is called. This is pretty much a direct translation of the corresponing C/C++ function we defined earlier. 
+    <code>fmul st(0), st(0)</code> is basically equivalent to 
+    <code>st(0) = st(0) * st(0);</code> in C/C++ pseudo code. 
+    <code>fld1</code> is another &quot;load constant&quot; function, just like 
+    <code>ldz</code>. It pushes the value zero on top of the stack. 
+    <code>faddp st(1), st(0)</code> adds 
+    <code>st(1)</code> to 
+    <code>st(0)</code> and stores the reslt in 
+    <code>st(1)</code>. After this step the top element of the stack gets popped off so the result is in 
+    <code>st(0)</code>. 
+    <code>fsin</code> performs 
+    <code>st(0) = sin(st(0))</code>. And last but not least we divide the resulting value by 2.0 using 
+    <code>fmul half</code>. This actually multiplies 
+    <code>st(0)</code> with 0.5 but it is obviously the same as dividing by zero since \(x / r = x \cdot \frac{1}{r}\). The value
+    of 
+    <code>f</code> is returned in 
+    <code>st(0)</code> and written into a buffer. Most of the following instructions have already been explained, with the
+    exception of 
+    <code>fcomip st(0), st(1)</code>. This compares the values of 
+    <code>st(0)</code> and 
+    <code>st(1)</code> and sets the flags Zero/Parity/Carry flags according to a particular pattern. More importantly, it specifies
+    
+    <code>CF = 1</code> if and only if 
+    <code>st(0) &lt; st(i)</code> - which is exactly what we want. The 
+    <code>jnb</code> instruction jumps only if the iterator is still smaller than 1.0. Here is the actual output of the
+    function:</p>
+    <pre><code>
+f(0.0000) = 0.420735, first two digits: 42
+f(0.1000) = 0.423415, first two digits: 42
+f(0.2000) = 0.431202, first two digits: 43
+f(0.3000) = 0.443313, first two digits: 44
+f(0.4000) = 0.458401, first two digits: 45
+f(0.5000) = 0.474492, first two digits: 47
+f(0.6000) = 0.488932, first two digits: 48
+f(0.7000) = 0.498368, first two digits: 49
+f(0.7999) = 0.498803, first two digits: 49
+f(0.9000) = 0.485763, first two digits: 48
+f(0.9999) = 0.454648, first two digits: 45
+    </pre></code>
+    <p>As you can see there are a few errors in the iterator such as 
+    <code>0.7999</code> and 
+    <code>0.9999</code>. You should probably already be familiar with the problem of rounding errors on floating point numbers from
+    imperative high level programming languages. It is simply a result of the system we use. Not every number can be perfectly
+    represented. Most of them have certain small errors and the results of arithmetic operations on them are inaccurate. There are
+    many FPU instructions with extremely specific applications and I am not going to cover them here. Rule of thumb: If you want to
+    know how something works, write it in C/C++, turn on assembly listings and read the code in combination with an x86 Instruction
+    Set Reference.</p></div>
+  </body>
+</html>

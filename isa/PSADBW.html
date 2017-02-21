@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>PSADBW: Compute Sum of Absolute Differences (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>PSADBW - Compute Sum of Absolute Differences</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F F6 /r</code></td>
+<td><code>PSADBW mm1, mm2/m64</code></td>
+<td>Computes the absolute differences of the packed unsigned byte integers from mm2 /m64 and mm1; differences are then summed to produce an unsigned word integer result.</td>
+</tr>
+<tr>
+<td><code>66 0F F6 /r</code></td>
+<td><code>PSADBW xmm1, xmm2/m128</code></td>
+<td>Computes the absolute differences of the packed unsigned byte integers from xmm2/m128 and xmm1; the 8 low differences and 8 high differences are then summed separately to produce two unsigned word integer results.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Computes the absolute value of the difference of 8 unsigned byte integers from the source operand (second operand) and from the destination operand (first operand). These 8 differences are then summed to produce an unsigned word integer result that is stored in the destination operand. The source operand can be an MMX technology register or a 64-bit memory location or it can be an XMM register or a 128-bit memory location. The destination operand can be an MMX technology register or an XMM register. Figure 4-5 shows the operation of the PSADBW instruction when using 64-bit operands.</p>
+<p>When operating on 64-bit operands, the word integer result is stored in the low word of the destination operand, and the remaining bytes in the destination operand are cleared to all 0s.</p>
+<p>When operating on 128-bit operands, two packed results are computed. Here, the 8 low-order bytes of the source and destination operands are operated on to produce a word result that is stored in the low word of the destination operand, and the 8 high-order bytes are operated on to produce a word result that is stored in bits 64 through 79 of the destination operand. The remaining bytes of the destination operand are cleared.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(OperandSize == 64) {
+	//PSADBW instructions when using 64-bit operands:
+	Temporary0 = GetAbsoluteValue(Destination[0..7] - Source[0..7]);
+	Temporary1 = GetAbsoluteValue(Destination[8..15] - Source[8..15]);
+	Temporary2 = GetAbsoluteValue(Destination[16..23] - Source[16..23]);
+	Temporary3 = GetAbsoluteValue(Destination[24..31] - Source[24..31]);
+	Temporary4 = GetAbsoluteValue(Destination[32..39] - Source[32..39]);
+	Temporary5 = GetAbsoluteValue(Destination[40..47] - Source[40..47]);
+	Temporary6 = GetAbsoluteValue(Destination[48..55] - Source[48..55]);
+	Temporary7 = GetAbsoluteValue(Destination[56..63] - Source[56..63]);
+	Destination[0..15] = CalculateSum(Temporary0...Temporary7);
+	Destination[16..63] = 0;
+}
+else {
+	//PSADBW instructions when using 128-bit operands:
+	Temporary0 = GetAbsoluteValue(Destination[0..7] - Source[0..7]);
+	Temporary1 = GetAbsoluteValue(Destination[8..15] - Source[8..15]);
+	Temporary2 = GetAbsoluteValue(Destination[16..23] - Source[16..23]);
+	Temporary3 = GetAbsoluteValue(Destination[24..31] - Source[24..31]);
+	Temporary4 = GetAbsoluteValue(Destination[32..39] - Source[32..39]);
+	Temporary5 = GetAbsoluteValue(Destination[40..47] - Source[40..47]);
+	Temporary6 = GetAbsoluteValue(Destination[48..55] - Source[48..55]);
+	Temporary7 = GetAbsoluteValue(Destination[56..63] - Source[56..63]);
+	Temporary8 = GetAbsoluteValue(Destination[64..71] - Source[64..71]);
+	Temporary9 = GetAbsoluteValue(Destination[72..79] - Source[72..79]);
+	Temporary10 = GetAbsoluteValue(Destination[80..87] - Source[80..87]);
+	Temporary11 = GetAbsoluteValue(Destination[88..95] - Source[88..95]);
+	Temporary12 = GetAbsoluteValue(Destination[96..103] - Source[96..103]);
+	Temporary13 = GetAbsoluteValue(Destination[104..111] - Source[104..111]);
+	Temporary14 = GetAbsoluteValue(Destination[112..119] - Source[112..119]);
+	Temporary15 = GetAbsoluteValue(Destination[120..127] - Source[120..127]);
+	Destination[0..15] = CalculateSum(Temporary0...Temporary7);
+	Destination[16..63] = 0;
+	Destination[64..79] = CalculateSum(Temporary8...Temporary15);
+	Destination[80..127] = 0;
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>PSADBW mm, mm</code></td><td>4/4/5</td><td>1/1/2</td><td>MMX_ALU</td></tr>
+<tr><td><code>PSADBW xmm, xmm</code></td><td>4/4/5+2</td><td>2/2/4</td><td>MMX_ALU</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

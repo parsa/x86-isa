@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>LOOP/LOOPcc: Loop According to ECX Counter (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>LOOP/LOOPcc - Loop According to ECX Counter</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>E2 cb</code></td>
+<td><code>LOOP rel8</code></td>
+<td>Decrement count; jump short if count != 0.</td>
+</tr>
+<tr>
+<td><code>E1 cb</code></td>
+<td><code>LOOPE rel8</code></td>
+<td>Decrement count; jump short if count != 0 and ZF=1.</td>
+</tr>
+<tr>
+<td><code>E1 cb</code></td>
+<td><code>LOOPZ rel8</code></td>
+<td>Decrement count; jump short if count != 0 and ZF=1.</td>
+</tr>
+<tr>
+<td><code>E0 cb</code></td>
+<td><code>LOOPNE rel8</code></td>
+<td>Decrement count; jump short if count != 0 and ZF=0.</td>
+</tr>
+<tr>
+<td><code>E0 cb</code></td>
+<td><code>LOOPNZ rel8</code></td>
+<td>Decrement count; jump short if count != 0 and ZF=0.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Performs a loop operation using the ECX or CX register as a counter. Each time the LOOP instruction is executed, the count register is decremented, then checked for 0. If the count is 0, the loop is terminated and program execution continues with the instruction following the LOOP instruction. If the count is not zero, a near jump is performed to the destination (target) operand, which is presumably the instruction at the beginning of the loop. If the address-size attribute is 32 bits, the ECX register is used as the count register; otherwise the CX register is used.</p>
+<p>The target instruction is specified with a relative offset (a signed offset relative to the current value of the instruction pointer in the EIP register). This offset is generally specified as a label in assembly code, but at the machine code level, it is encoded as a signed, 8-bit immediate value, which is added to the instruction pointer. Offsets of -128 to +127 are allowed with this instruction.</p>
+<p>Some forms of the loop instruction (LOOPcc) also accept the ZF flag as a condition for terminating the loop before the count reaches zero. With these forms of the instruction, a condition code (cc) is associated with each instruction to indicate the condition being tested for. Here, the LOOPcc instruction itself does not affect the state of the ZF flag; the ZF flag is changed by other instructions in the loop.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(AddressSize == 32) Count = ECX;
+else Count = CX; //AddressSize == 16
+
+Count = Count - 1;
+
+switch(Instruction) {
+	case LOOPE:
+	case LOOPZ:
+		if(ZF == 1 &amp;&amp; Count != 0) BranchCond = 1;
+		else BranchCond = 0;
+		break;
+	case LOOPNE:
+	case LOOPNZ:
+		if(ZF == 0 &amp;&amp; Count != 0) BranchCond = 1;
+		else BranchCond = 0;
+		break;
+	default: //LOOP
+		if(Count != 0) BranchCond = 1;
+		else BranchCond = 0;
+		break;
+}
+if(BranchCond == 1) {
+	EIP = EIP + SignExtend(Destination);
+	if(OperandSize == 16) EIP = EIP &amp; 0xFFFF;
+	else /*OperandSize == 32*/ if(EIP &lt; CS.Base || EIP &lt; CS.Limit) Exception(GP);
+}
+else ResumeExecution(); //Terminate loop and continue program execution at EIP
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If the offset being jumped to is beyond the limits of the CS segment.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP</code></td><td>If the offset being jumped to is beyond the limits of the CS segment or is outside of the effective address space from 0 to FFFFH. This condition can occur if a 32-bit address size override prefix is used.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+Same exceptions as in Real Address Mode
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>LOOP</code></td><td>8</td><td>1.5</td><td>ALU</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

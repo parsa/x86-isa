@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>IDIV: Signed Divide (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>IDIV - Signed Divide</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>F6 /7</code></td>
+<td><code>IDIV r/m8</code></td>
+<td>Signed divide AX by r/m8, with result stored in AL = Quotient, AH = Remainder.</td>
+</tr>
+<tr>
+<td><code>F7 /7</code></td>
+<td><code>IDIV r/m16</code></td>
+<td>Signed divide DX:AX by r/m16, with result stored in AX = Quotient, DX = Remainder.</td>
+</tr>
+<tr>
+<td><code>F7 /7</code></td>
+<td><code>IDIV r/m32</code></td>
+<td>Signed divide EDX:EAX by r/m32, with result stored in EAX = Quotient, EDX = Remainder.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Divides (signed) the value in the AX, DX:AX, or EDX:EAX registers (dividend) by the source operand (divisor) and stores the result in the AX (AH:AL), DX:AX, or EDX:EAX registers. The source operand can be a general-purpose register or a memory location. The action of this instruction depends on the operand size (dividend/divisor), as shown in the following table:</p>
+<div>
+<table>
+<caption>IDIV Results</caption>
+<tr><td>[header]Operand Size</td><td>Dividend</td><td>Divisor</td><td>Quotient</td><td>Remainder</td><td>Quotient Range[/header]</td></tr>
+<tr><td>Word/byte</td><td>AX</td><td>r/m8</td><td>AL</td><td>AH</td><td>-2^8 to +2^8 - 1</td></tr>
+<tr><td>Doubleword/word</td><td>DX:AX</td><td>r/m16</td><td>AX</td><td>DX</td><td>-2^16 to +2^16 - 1</td></tr>
+<tr><td>Quadword/doubleword</td><td>EDX:EAX</td><td>r/m32</td><td>EAX</td><td>EDX</td><td>-2^31 to +2^32 - 1</td></tr>
+</table>
+</div>
+<p>Non-integral results are truncated (chopped) towards 0. The sign of the remainder is always the same as the sign of the dividend. The absolute value of the remainder is always less than the absolute value of the divisor. Overflow is indicated with the #DE (divide error) exception rather than with the OF (overflow) flag.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(Source == 0) Exception(DE); //divide error
+
+if(OperandSize == 8) { //word/byte operation
+	Temporary = AX / Source; //signed division
+	if(Temporary &gt; 0x7F || Temporary &lt; 0x80) Exception(DE); //f a positive result is greater than 7FH or a negative result is less than 80H
+	else {
+		AL = Temporary;
+		AH = AX % Source; //signed modulus
+	}
+}
+else if(OperandSize == 16) { //doubleword/word operation
+	Temporary = DX:AX / Source; //signed division
+	if(Temporary &gt; 0x7FFF || Temporary &lt; 0x8000) Exception(DE); //f a positive result is greater than 7FFFH or a negative result is less than 8000H
+	else {
+		AX = Temporary;
+		DX = DX:AX % Source; //signed modulus
+	}
+}
+else { //quadword/doubleword operation
+	Temporary = EDX:EAX / Source; //signed division
+	if(Temporary &gt; 0x7FFFFFFF || Temporary &lt; 0x80000000) Exception(DE); //f a positive result is greater than 7FFFFFFFH or a negative result is less than 80000000H
+	else {
+		EAX = Temporary;
+		EDX = EDX:EAX % Source; //signed modulus
+	}
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>The CF, OF, SF, ZF, AF, and PF flags are undefined.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#DE</code></td><td>If the source operand (divisor) is 0. The signed result (quotient) is too large for the destination.</td></tr>
+<tr><td><code>#DE</code></td><td>If the source operand (divisor) is 0. The signed result (quotient) is too large for the destination.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. If the DS, ES, FS, or GS register is used to access memory and it contains a null segment selector.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#DE</code></td><td>If the source operand (divisor) is 0. The signed result (quotient) is too large for the destination.</td></tr>
+<tr><td><code>#DE</code></td><td>If the source operand (divisor) is 0. The signed result (quotient) is too large for the destination.</td></tr>
+<tr><td><code>#GP</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#DE</code></td><td>If the source operand (divisor) is 0. The signed result (quotient) is too large for the destination.</td></tr>
+<tr><td><code>#DE</code></td><td>If the source operand (divisor) is 0. The signed result (quotient) is too large for the destination.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n</td><td>0F3n/0F2n</td><td>0F2n</td></tr>
+<tr><td><code>IDIV</code></td><td>66-80/56-70</td><td>30/23</td><td>-</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

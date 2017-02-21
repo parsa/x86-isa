@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>PMULLW: Multiply Packed Signed Integers and Store Low Result (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>PMULLW - Multiply Packed Signed Integers and Store Low Result</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F D5 /r</code></td>
+<td><code>PMULLW mm, mm/m64 Multiply the packed signed word integers in mm1 register and mm2/m64, and store the low 16 bits of the results in mm1.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>66 0F D5 /r</code></td>
+<td><code>PMULLW xmm1, xmm2/m128 Multiply the packed signed word integers in xmm1 and xmm2/m128, and store the low 16 bits of the results in xmm1.</code></td>
+<td></td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Performs an SIMD signed multiply of the packed signed word integers in the destination operand (first operand) and the source operand (second operand), and stores the low 16 bits of each intermediate 32-bit result in the destination operand. (Figure 4-3 shows this operation when using 64-bit operands.) The source operand can be an MMX technology register or a 64-bit memory location, or it can be an XMM register or a 128-bit memory location. The destination operand can be an MMX technology register or an XMM register.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(OperandSize == 64) {
+	//PMULLW instruction with 64-bit operands:
+	//Signed multiplication
+	Temporary0[0..31] = Destination[0..15] * Source[0..15];
+	Temporary1[0..31] = Destination[16..31] * Source[16..31];
+	Temporary2[0..31] = Destination[32..47] * Source[32..47];
+	Temporary3[0..31] = Destination[48..63] * Source[48..63];
+	Destination[0..15] = Temporary0[0..15];
+	Destination[16..31] = Temporary1[0..15];
+	Destination[32..47] = Temporary2[0..15];
+	Destination[48..63] = Temporary3[0..15];
+}
+else {
+	//PMULLW instruction with 64-bit operands:
+	//Signed multiplication
+	Temporary0[0..31] = Destination[0..15] * Source[0..15];
+	Temporary1[0..31] = Destination[16..31] * Source[16..31];
+	Temporary2[0..31] = Destination[32..47] * Source[32..47];
+	Temporary3[0..31] = Destination[48..63] * Source[48..63];
+	Temporary4[0..31] = Destination[64..79] * Source[64..79];
+	Temporary5[0..31] = Destination[80..95] * Source[80..95];
+	Temporary6[0..31] = Destination[96..111] * Source[96..111];
+	Temporary7[0..31] = Destination[112..127] * Source[112..127];
+	Destination[0..15] = Temporary0[0..15];
+	Destination[16..31] = Temporary1[0..15];
+	Destination[32..47] = Temporary2[0..15];
+	Destination[48..63] = Temporary3[0..15];
+	Destination[64..79] = Temporary4[0..15];
+	Destination[80..95] = Temporary5[0..15];
+	Destination[96..111] = Temporary6[0..15];
+	Destination[112..127] = Temporary7[0..15];
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>PMULLW mm, mm</code></td><td>9/8/-</td><td>1/1/-</td><td>FP_MUL</td></tr>
+<tr><td><code>PMULLW xmm, xmm</code></td><td>9/8/3+1</td><td>2/2/2</td><td>FP_MUL</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

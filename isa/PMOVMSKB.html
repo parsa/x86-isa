@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>PMOVMSKB: Move Byte Mask (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>PMOVMSKB - Move Byte Mask</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F D7 /r</code></td>
+<td><code>PMOVMSKB r32, mm Move a byte mask of mm to r32.</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>66 0F D7 /r</code></td>
+<td><code>PMOVMSKB r32, xmm Move a byte mask of xmm to r32.</code></td>
+<td></td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Creates a mask made up of the most significant bit of each byte of the source operand (second operand) and stores the result in the low byte or word of the destination operand (first operand).</p>
+<p>The source operand is an MMX technology register or an XMM register; the destination operand is a general-purpose register. When operating on 64-bit operands, the byte mask is 8 bits; when operating on 128-bit operands, the byte mask is 16-bits.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(OperandSize == 64) {
+	//PMOVMSKB instruction with 64-bit source operand:
+	r32[0] = Source[7];
+	r32[1] = Source[15];
+	r32[2] = Source[23];
+	r32[3] = Source[31];
+	r32[4] = Source[39];
+	r32[5] = Source[47];
+	r32[6] = Source[55];
+	r32[7] = Source[63];
+	r32[8..31] = 0;
+}
+else {
+	//PMOVMSKB instruction with 128-bit source operand:
+	r32[0] = Source[7];
+	r32[1] = Source[15];
+	r32[2] = Source[23];
+	r32[3] = Source[31];
+	r32[4] = Source[39];
+	r32[5] = Source[47];
+	r32[6] = Source[55];
+	r32[7] = Source[63];
+	r32[8] = Source[71];
+	r32[9] = Source[79];
+	r32[10] = Source[87];
+	r32[11] = Source[95];
+	r32[12] = Source[103];
+	r32[13] = Source[111];
+	r32[14] = Source[119];
+	r32[15] = Source[127];
+	r32[16..31] = 0;
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. (128-bit operations only) If OSFXSR in CR4 is 0. (128-bit operations only) If CPUID feature flag SSE2 is 0.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. (128-bit operations only) If OSFXSR in CR4 is 0. (128-bit operations only) If CPUID feature flag SSE2 is 0.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+Same exceptions as in Protected Mode
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+Same exceptions as in Protected Mode
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Numeric Exceptions</th>
+</tr>
+<tr>
+<td>
+None.
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>PMOVMSKB r32, mm</code></td><td>7/7/1</td><td>2/2/1</td><td>FP_MISC</td></tr>
+<tr><td><code>PMOVMSKB r32, xmm</code></td><td>7/7/-</td><td>2/2/-</td><td>FP_MISC</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

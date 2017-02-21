@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>PCMPGTB/PCMPGTW/PCMPGTD: Compare Packed Signed Integers for Greater Than (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>PCMPGTB/PCMPGTW/PCMPGTD - Compare Packed Signed Integers for Greater Than</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F 64 /r</code></td>
+<td><code>PCMPGTB mm, mm/m64</code></td>
+<td>Compare packed signed byte integers in mm and mm/m64 for greater than.</td>
+</tr>
+<tr>
+<td><code>66 0F 64 /r</code></td>
+<td><code>PCMPGTB xmm1, xmm2/m128</code></td>
+<td>Compare packed signed byte integers in xmm1 and xmm2/m128 for greater than.</td>
+</tr>
+<tr>
+<td><code>0F 65 /r</code></td>
+<td><code>PCMPGTW mm, mm/m64</code></td>
+<td>Compare packed signed word integers in mm and mm/m64 for greater than.</td>
+</tr>
+<tr>
+<td><code>66 0F 65 /r</code></td>
+<td><code>PCMPGTW xmm1, xmm2/m128</code></td>
+<td>Compare packed signed word integers in xmm1 and xmm2/m128 for greater than.</td>
+</tr>
+<tr>
+<td><code>0F 66 /r</code></td>
+<td><code>PCMPGTD mm, mm/m64</code></td>
+<td>Compare packed signed doubleword integers in mm and mm/m64 for greater than.</td>
+</tr>
+<tr>
+<td><code>66 0F 66 /r</code></td>
+<td><code>PCMPGTD xmm1, xmm2/m128</code></td>
+<td>Compare packed signed doubleword integers in xmm1 and xmm2/m128 for greater than.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Performs an SIMD signed compare for the greater value of the packed byte, word, or doubleword integers in the destination operand (first operand) and the source operand (second operand). If a data element in the destination operand is greater than the corresponding date element in the source operand, the corresponding data element in the destination operand is set to all 1s; otherwise, it is set to all 0s. The source operand can be an MMX technology register or a 64-bit memory location, or it can be an XMM register or a 128-bit memory location. The destination operand can be an MMX technology register or an XMM register.</p>
+<p>The PCMPGTB instruction compares the corresponding signed byte integers in the destination and source operands; the PCMPGTW instruction compares the corresponding signed word integers in the destination and source operands; and the PCMPGTD instruction compares the corresponding signed doubleword integers in the destination and source operands.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(Instruction) {
+	case PCMPGTB:
+		if(OperandSize == 64) {
+			//PCMPGTB instruction with 64-bit operands:
+			if(Destination[0..7] &gt; Source[0..7]) Destination[0..7] = 0xFF;
+			else Destination[0..7] = 0;
+			if(Destination[8..15] &gt; Source[8..15]) Destination[8..15] = 0xFF;
+			else Destination[8..15] = 0;
+			if(Destination[16..23] &gt; Source[16..23]) Destination[16..23] = 0xFF;
+			else Destination[16..23] = 0;
+			if(Destination[24..31] &gt; Source[24..31]) Destination[24..31] = 0xFF;
+			else Destination[24..31] = 0;
+			if(Destination[32..39] &gt; Source[32..39]) Destination[32..39] = 0xFF;
+			else Destination[32..39] = 0;
+			if(Destination[40..47] &gt; Source[40..47]) Destination[40..47] = 0xFF;
+			else Destination[40..47] = 0;
+			if(Destination[48..55] &gt; Source[48..55]) Destination[48..55] = 0xFF;
+			else Destination[48..55] = 0;
+			if(Destination[56..63] &gt; Source[56..63]) Destination[56..63] = 0xFF;
+			else Destination[56..63] = 0;
+		}
+		else {
+			//PCMPGTB instruction with 128-bit operands:
+			if(Destination[0..7] &gt; Source[0..7]) Destination[0..7] = 0xFF;
+			else Destination[0..7] = 0;
+			if(Destination[8..15] &gt; Source[8..15]) Destination[8..15] = 0xFF;
+			else Destination[8..15] = 0;
+			if(Destination[16..23] &gt; Source[16..23]) Destination[16..23] = 0xFF;
+			else Destination[16..23] = 0;
+			if(Destination[24..31] &gt; Source[24..31]) Destination[24..31] = 0xFF;
+			else Destination[24..31] = 0;
+			if(Destination[32..39] &gt; Source[32..39]) Destination[32..39] = 0xFF;
+			else Destination[32..39] = 0;
+			if(Destination[40..47] &gt; Source[40..47]) Destination[40..47] = 0xFF;
+			else Destination[40..47] = 0;
+			if(Destination[48..55] &gt; Source[48..55]) Destination[48..55] = 0xFF;
+			else Destination[48..55] = 0;
+			if(Destination[56..63] &gt; Source[56..63]) Destination[56..63] = 0xFF;
+			else Destination[56..63] = 0;
+			if(Destination[64..71] &gt; Source[64..71]) Destination[64..71] = 0xFF;
+			else Destination[64..71] = 0;
+			if(Destination[72..79] &gt; Source[72..79]) Destination[72..79] = 0xFF;
+			else Destination[72..79] = 0;
+			if(Destination[80..87] &gt; Source[80..87]) Destination[80..87] = 0xFF;
+			else Destination[80..87] = 0;
+			if(Destination[88..95] &gt; Source[88..95]) Destination[88..95] = 0xFF;
+			else Destination[88..95] = 0;
+			if(Destination[96..103] &gt; Source[96..103]) Destination[96..103] = 0xFF;
+			else Destination[96..103] = 0;
+			if(Destination[104..111] &gt; Source[104..111]) Destination[104..111] = 0xFF;
+			else Destination[104..111] = 0;
+			if(Destination[112..119] &gt; Source[112..119]) Destination[112..119] = 0xFF;
+			else Destination[112..119] = 0;
+			if(Destination[120..127] &gt; Source[120..127]) Destination[120..127] = 0xFF;
+			else Destination[120..127] = 0;
+		break;
+	case PCMPGTW:
+		if(OperandSize == 64) {
+			//PCMPGTW instruction with 64-bit operands:
+			if(Destination[0..15] &gt; Source[0..15]) Destination[0..15] = 0xFFFF;
+			else Destination[0..15] = 0;
+			if(Destination[16..31] &gt; Source[16..31]) Destination[16..31] = 0xFFFF;
+			else Destination[16..31] = 0;
+			if(Destination[32..47] &gt; Source[32..47]) Destination[32..47] = 0xFFFF;
+			else Destination[32..47] = 0;
+			if(Destination[48..63] &gt; Source[48..63]) Destination[48..63] = 0xFFFF;
+			else Destination[48..63] = 0;
+		}
+		else {
+			//PCMPGTW instruction with 128-bit operands:
+			if(Destination[0..15] &gt; Source[0..15]) Destination[0..15] = 0xFFFF;
+			else Destination[0..15] = 0;
+			if(Destination[16..31] &gt; Source[16..31]) Destination[16..31] = 0xFFFF;
+			else Destination[16..31] = 0;
+			if(Destination[32..47] &gt; Source[32..47]) Destination[32..47] = 0xFFFF;
+			else Destination[32..47] = 0;
+			if(Destination[48..63] &gt; Source[48..63]) Destination[48..63] = 0xFFFF;
+			else Destination[48..63] = 0;
+			if(Destination[64..79] &gt; Source[64..79]) Destination[64..79] = 0xFFFF;
+			else Destination[64..79] = 0;
+			if(Destination[80..95] &gt; Source[80..95]) Destination[80..95] = 0xFFFF;
+			else Destination[80..95] = 0;
+			if(Destination[96..111] &gt; Source[96..111]) Destination[96..111] = 0xFFFF;
+			else Destination[96..111] = 0;
+			if(Destination[112..127] &gt; Source[112..127]) Destination[112..127] = 0xFFFF;
+			else Destination[112..127] = 0;
+		}
+		break:
+	case PCMPGTD:
+		if(OperandSize == 64) {
+			//PCMPGTD instruction with 64-bit operands:
+			if(Destination[0..31] &gt; Source[0..31]) Destination[0..31] = 0xFFFFFFFF;
+			else Destination[0..31] = 0;
+			if(Destination[32..63] &gt; Source[32..63]) Destination[32..63] = 0xFFFFFFFF;
+			else Destination[32..63] = 0;
+		}
+		else {
+			//PCMPGTD instruction with 128-bit operands:
+			if(Destination[0..31] &gt; Source[0..31]) Destination[0..31] = 0xFFFFFFFF;
+			else Destination[0..31] = 0;
+			if(Destination[32..63] &gt; Source[32..63]) Destination[32..63] = 0xFFFFFFFF;
+			else Destination[32..63] = 0;
+			if(Destination[64..95] &gt; Source[64..95]) Destination[64..95] = 0xFFFFFFFF;
+			else Destination[64..95] = 0;
+			if(Destination[96..127] &gt; Source[96..127]) Destination[96..127] = 0xFFFFFFFF;
+			else Destination[96..127] = 0;
+		}
+		break;
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. 128-bit operations will generate #UD only if OSFXSR in CR4 is 0. Execution of 128-bit instructions on a non-SSE2 capable processor (one that is MMX technology capable) will result in the instruction operating on the mm registers, not #UD.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+<tr><td><code>#MF</code></td><td>(64-bit operations only) If there is a pending x87 FPU exception.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. 128-bit operations will generate #UD only if OSFXSR in CR4 is 0. Execution of 128-bit instructions on a non-SSE2 capable processor (one that is MMX technology capable) will result in the instruction operating on the mm registers, not #UD.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+Same exceptions as in Real Address Mode
+<div>
+<table>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Numeric Exceptions</th>
+</tr>
+<tr>
+<td>
+None.
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>PCMPGTB/PCMPGTD/PCMPGTW mm, mm</code></td><td>2/2/-</td><td>1/1/-</td><td>MMX_ALU</td></tr>
+<tr><td><code>PCMPGTB/PCMPGTD/PCMPGTW xmm, xmm</code></td><td>2/2/1</td><td>2/2/1</td><td>MMX_ALU</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

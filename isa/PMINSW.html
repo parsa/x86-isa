@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>PMINSW: Minimum of Packed Signed Word Integers (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>PMINSW - Minimum of Packed Signed Word Integers</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>0F EA /r</code></td>
+<td><code>PMINSW mm1, mm2/m64</code></td>
+<td>Compare signed word integers in mm2/m64 and mm1 and return minimum values.</td>
+</tr>
+<tr>
+<td><code>66 0F EA /r</code></td>
+<td><code>PMINSW xmm1, xmm2/m128</code></td>
+<td>Compare signed word integers in xmm2/m128 and xmm1 and return minimum values.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Performs an SIMD compare of the packed signed word integers in the destination operand (first operand) and the source operand (second operand), and returns the minimum value for each pair of word integers to the destination operand. The source operand can be an MMX technology register or a 64-bit memory location, or it can be an XMM register or a 128-bit memory location.</p>
+<p>The destination operand can be an MMX technology register or an XMM register.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(OperandSize == 64) {
+	//PMINSW instruction for 64-bit operands:
+	if(Destination[0..15] &gt;= Source[0..15]) Destination[0..15] = Source[0..15];
+	if(Destination[16..31] &gt;= Source[16..31]) Destination[16..31] = Source[16..31];
+	if(Destination[32..47] &gt;= Source[32..47]) Destination[32..47] = Source[32..47];
+	if(Destination[48..63] &gt;= Source[48..63]) Destination[48..63] = Source[48..63];
+}
+else {
+	//PMINSW instruction for 128-bit operands:
+	if(Destination[0..15] &gt;= Source[0..15]) Destination[0..15] = Source[0..15];
+	if(Destination[16..31] &gt;= Source[16..31]) Destination[16..31] = Source[16..31];
+	if(Destination[32..47] &gt;= Source[32..47]) Destination[32..47] = Source[32..47];
+	if(Destination[48..63] &gt;= Source[48..63]) Destination[48..63] = Source[48..63];
+	if(Destination[64..79] &gt;= Source[64..79]) Destination[64..79] = Source[64..79];
+	if(Destination[80..95] &gt;= Source[80..95]) Destination[80..95] = Source[80..95];
+	if(Destination[96..111] &gt;= Source[96..111]) Destination[96..111] = Source[96..111];
+	if(Destination[112..127] &gt;= Source[112..127]) Destination[112..127] = Source[112..127];
+}
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. (128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. (128-bit operations only) If OSFXSR in CR4 is 0. (128-bit operations only) If CPUID feature flag SSE2 is 0.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+<tr><td><code>#MF</code></td><td>(64-bit operations only) If there is a pending x87 FPU exception.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>(128-bit operations only) If a memory operand is not aligned on a 16-byte boundary, regardless of segment. If any part of the operand lies outside of the effective address space from 0 to FFFFH.</td></tr>
+<tr><td><code>#UD</code></td><td>If EM in CR0 is set. (128-bit operations only) If OSFXSR in CR4 is 0. (128-bit operations only) If CPUID feature flag SSE2 is 0.</td></tr>
+<tr><td><code>#NM</code></td><td>If TS in CR0 is set.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+Same exceptions as in Real Address Mode
+<div>
+<table>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>For a page fault.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Numeric Exceptions</th>
+</tr>
+<tr>
+<td>
+None.
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n</td><td>0F3n/0F2n</td><td>0F2n</td></tr>
+<tr><td><code>PMIN mm, mm</code></td><td>2/2</td><td>1/1</td><td>MMX_ALU</td></tr>
+<tr><td><code>PMIN xmm, xmm</code></td><td>2/2</td><td>2/2</td><td>MMX_ALU</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

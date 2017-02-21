@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>LEA: Load Effective Address (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>LEA - Load Effective Address</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>8D /r</code></td>
+<td><code>LEA r16,m</code></td>
+<td>Store effective address for m in register r16.</td>
+</tr>
+<tr>
+<td><code>8D /r</code></td>
+<td><code>LEA r32,m</code></td>
+<td>Store effective address for m in register r32.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Computes the effective address of the second operand (the source operand) and stores it in the first operand (destination operand). The source operand is a memory address (offset part) specified with one of the processors addressing modes; the destination operand is a general-purpose register. The address-size and operand-size attributes affect the action performed by this instruction, as shown in the following table. The operand-size attribute of the instruction is determined by the chosen register; the address-size attribute is determined by the attribute of the code segment.</p>
+<div>
+<table>
+<caption>Address and Operand Size Attributes</caption>
+<tr><th>Operand Size</th><th>Address Size</th><th>Action Performed</th></tr>
+<tr><td>16</td><td>16</td><td>16-bit effective address is calculated and stored in requested 16-bit register destination.</td></tr>
+<tr><td>16</td><td>32</td><td>32-bit effective address is calculated. The lower 16 bits of the address are stored in the requested 16-bit register destination.</td></tr>
+<tr><td>32</td><td>16</td><td>16-bit effective address is calculated. The 16-bit address is zeroextended and stored in the requested 32-bit register destination.</td></tr>
+<tr><td>32</td><td>32</td><td>32-bit effective address is calculated and stored in the requested 32-bit register destination.</td></tr>
+</table>
+</div>
+<p>Different assemblers may use different algorithms based on the size attribute and symbolic reference of the source operand.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">if(OperandSize == 16 &amp;&amp; AddressSize == 16) Destination = EffectiveAddress(Source); //16-bit address
+else if(OperandSize == 16 &amp;&amp; AddressSize == 32) {
+	Temporary = EffectiveAddress(Source); //32-bit address
+	Destination = Temporary[0..15]; //16-bit address
+}
+else if(OperandSize == 32 &amp;&amp; AddressSize == 16) {
+	Temporary = EffectiveAddress(Source); //16-bit address;
+	Destination = ZeroExtend(Temporary); //32-bit address
+}
+else if(OperandSize == 32 &amp;&amp; AddressSize == 32) Destination = EffectiveAddress(Source) //32-bit address
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>None.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#UD</code></td><td>If source operand is not a memory location.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#UD</code></td><td>If source operand is not a memory location.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#UD</code></td><td>If source operand is not a memory location.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+</div>
+</body>
+</html>

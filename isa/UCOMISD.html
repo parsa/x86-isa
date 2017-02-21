@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>UCOMISD: Unordered Compare Scalar Double-Precision Floating- Point Values and Set EFLAGS (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>UCOMISD - Unordered Compare Scalar Double-Precision Floating- Point Values and Set EFLAGS</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>66 0F 2E /r</code></td>
+<td><code>UCOMISD xmm1, xmm2/m64</code></td>
+<td>Compare (unordered) the low double-precision floating-point values in xmm1 and xmm2/m64 and set EFLAGS accordingly.</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Performs and unordered compare of the double-precision floating-point values in the low quadwords of source operand 1 (first operand) and source operand 2 (second operand), and sets the ZF, PF, and CF flags in the EFLAGS register according to the result (unordered, greater than, less than, or equal). The OF, SF and AF flags in the EFLAGS register are set to 0. The unordered result is returned if either source operand is a NaN (QNaN or SNaN).</p>
+<p>Source operand 1 is an XMM register; source operand 2 can be an XMM register or a 64 bit memory location.</p>
+<p>The UCOMISD instruction differs from the COMISD instruction in that it signals an SIMD floating-point invalid operation exception (#I) only when a source operand is an SNaN. The COMISD instruction signals an invalid operation exception if a source operand is either a QNaN or an SNaN.</p>
+<p>The EFLAGS register is not updated if an unmasked SIMD floating-point exception is generated.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">Result = UnorderedCompare(Source1[0..63], Source2[0..63]);
+switch(Result) {
+	case ResultUnordered:
+		ZF = 1;
+		PF = 1;
+		CF = 1;
+		break;
+	case ResultGreaterThan:
+		ZF = 0;
+		PF = 0;
+		CF = 0;
+		break;
+	case ResultLessThan:
+		ZF = 0;
+		PF = 0;
+		CF = 1;
+		break;
+	case ResultEqual:
+		ZF = 1;
+		PF = 0;
+		CF = 0;
+		break;
+}
+
+OF = 0;
+AF = 0;
+SF = 0;
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n/069n</td><td>0F3n/0F2n/069n</td><td>0F2n</td></tr>
+<tr><td><code>UCOMISD xmm, xmm</code></td><td>7/6/1</td><td>2/2/1</td><td>FP_ADD, FP_MISC</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>

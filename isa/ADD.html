@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="../assets/style.css" />
+<title>ADD: Add (x86 Instruction Set Reference)</title>
+<link rel="icon" type="image/ico" href="favicon.ico" />
+<meta name="keywords"
+content="assembly,asm,programming,optimization,optimisation,c,c++,x86,pastebin,opcode,opcodes,dictionary,intel,amd,download,downloads,tutorial" />
+<meta name="description"
+content="x86 assembly tutorials, x86 opcode reference, programming, pastebin with syntax highlighting" />
+<meta name="robots" content="index, follow" />
+<script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+<body>
+<div class="container"><h1 class="x86-instruction-set-reference">x86 Instruction Set Reference</h1>
+<h2>ADD - Add</h2>
+<object>
+<table>
+<tr>
+<th>Opcode</th>
+<th>Mnemonic</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>04 ib</code></td>
+<td><code>ADD AL, imm8</code></td>
+<td>Add imm8 to AL</td>
+</tr>
+<tr>
+<td><code>05 iw</code></td>
+<td><code>ADD AX, imm16</code></td>
+<td>Add imm16 to AX</td>
+</tr>
+<tr>
+<td><code>05 id</code></td>
+<td><code>ADD EAX, imm32</code></td>
+<td>Add imm32 to EAX</td>
+</tr>
+<tr>
+<td><code>80 /0 ib</code></td>
+<td><code>ADD r/m8, imm8</code></td>
+<td>Add imm8 to r/m8</td>
+</tr>
+<tr>
+<td><code>81 /0 iw</code></td>
+<td><code>ADD r/m16, imm16</code></td>
+<td>Add imm16 to r/m16</td>
+</tr>
+<tr>
+<td><code>81 /0 id</code></td>
+<td><code>ADD r/m32, imm32</code></td>
+<td>Add imm32 to r/m32</td>
+</tr>
+<tr>
+<td><code>83 /0 ib</code></td>
+<td><code>ADD r/m16, imm8</code></td>
+<td>Add sign-extended imm8 to r/m16</td>
+</tr>
+<tr>
+<td><code>83 /0 ib</code></td>
+<td><code>ADD r/m32, imm8</code></td>
+<td>Add sign-extended imm8 to r/m32</td>
+</tr>
+<tr>
+<td><code>00 /r</code></td>
+<td><code>ADD r/m8, r8</code></td>
+<td>Add r8 to r/m8</td>
+</tr>
+<tr>
+<td><code>01 /r</code></td>
+<td><code>ADD r/m16, r16</code></td>
+<td>Add r16 to r/m16</td>
+</tr>
+<tr>
+<td><code>01 /r</code></td>
+<td><code>ADD r/m32, r32</code></td>
+<td>Add r32 to r/m32</td>
+</tr>
+<tr>
+<td><code>02 /r</code></td>
+<td><code>ADD r8, r/m8</code></td>
+<td>Add r/m8 to r8</td>
+</tr>
+<tr>
+<td><code>03 /r</code></td>
+<td><code>ADD r16, r/m16</code></td>
+<td>Add r/m16 to r16</td>
+</tr>
+<tr>
+<td><code>03 /r</code></td>
+<td><code>ADD r32, r/m32</code></td>
+<td>Add r/m32 to r32</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Description</th>
+</tr>
+<tr>
+<td>
+<p>Adds the first operand (destination operand) and the second operand (source operand) and stores the result in the destination operand. The destination operand can be a register or a memory location; the source operand can be an immediate, a register, or a memory location. (However, two memory operands cannot be used in one instruction.) When an immediate value is used as an operand, it is sign-extended to the length of the destination operand format.</p>
+<p>The ADD instruction performs integer addition. It evaluates the result for both signed and unsigned integer operands and sets the OF and CF flags to indicate a carry (overflow) in the signed or unsigned result, respectively. The SF flag indicates the sign of the signed result.</p>
+<p>This instruction can be used with a LOCK prefix to allow the instruction to be executed atomically.</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Operation</th>
+</tr>
+<tr>
+<td>
+<pre class="prettyprint">Destination = Destination + Source;
+</pre>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Flags affected</th>
+</tr>
+<tr>
+<td>
+<p>The OF, SF, ZF, AF, CF, and PF flags are set according to the result.
+</p>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Protected Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If the destination is located in a non-writable segment. If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. If the DS, ES, FS, or GS register is used to access memory and it contains a null segment selector.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If the destination is located in a non-writable segment. If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit. If the DS, ES, FS, or GS register is used to access memory and it contains a null segment selector.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Real-Address Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#GP</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Virtual-8086 Mode Exceptions</th>
+</tr>
+<tr>
+<td>
+<div>
+<table>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#GP(0)</code></td><td>If a memory operand effective address is outside the CS, DS, ES, FS, or GS segment limit.</td></tr>
+<tr><td><code>#SS(0)</code></td><td>If a memory operand effective address is outside the SS segment limit.</td></tr>
+<tr><td><code>#PF(fault-code)</code></td><td>If a page fault occurs.</td></tr>
+</table>
+</div>
+</td>
+</tr>
+</table>
+</object>
+<object>
+<table>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Throughput</th>
+<th>Execution Unit</th>
+</tr>
+<tr><td><code>CPUID</code></td><td>0F3n/0F2n</td><td>0F3n/0F2n</td><td>0F2n</td></tr>
+<tr><td><code>ADD</code></td><td>1/0.5</td><td>0.5/0.5</td><td>ALU</td></tr>
+</table>
+</object>
+</div>
+</body>
+</html>
