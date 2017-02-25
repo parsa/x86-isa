@@ -1,5 +1,5 @@
 # x86-isa
-Unofficial version of the Intel 64 instruction set reference. Published at: http://x86.asm.parsaamini.net/
+Unofficial version of the Intel 64 instruction set reference. Published at: https://x86-isa.parsaamini.net/
 
 From: [zneak/x86doc](https://github.com/zneak/x86doc)
 > x86doc
